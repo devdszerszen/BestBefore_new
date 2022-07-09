@@ -11,7 +11,7 @@ import pl.dszerszen.bestbefore.util.Logger
 
 @Module
 @InstallIn(SingletonComponent::class)
-object MainModule {
+object AppModule {
 
     @Provides
     fun provideLogger(): Logger {
