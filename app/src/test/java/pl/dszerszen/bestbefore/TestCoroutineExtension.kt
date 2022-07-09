@@ -18,10 +18,9 @@ class TestCoroutineExtension : BeforeEachCallback, AfterEachCallback {
 
 }
 
-@Suppress("DEPRECATION")
 @ExperimentalCoroutinesApi
 object TestDispatchersProvider : DispatchersProvider {
-    private val dispatcher = TestCoroutineDispatcher()
+    private val dispatcher = StandardTestDispatcher()
     override fun mainDispatcher() = dispatcher
     override fun ioDispatcher() = dispatcher
     override fun defaultDispatcher() = dispatcher
