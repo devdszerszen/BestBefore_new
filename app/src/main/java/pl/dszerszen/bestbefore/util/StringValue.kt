@@ -21,12 +21,22 @@ sealed class StringValue : Parcelable {
             is TextString -> text
             is ResString -> stringResource(id)
         }
-
+    }
+    /**
+     * Use only for testing purposes
+     */
+    fun forceGet(): String {
+        return when (this) {
+            is ResString -> throw Exception("Cannot get ResString value")
+            is TextString -> text
+        }
     }
 }
 
 @Parcelize
-class TextString private constructor(val text: String) : StringValue()
+class TextString(val text: String) : StringValue()
 
 @Parcelize
 class ResString(@StringRes val id: Int): StringValue()
+
+fun String.asStringValue(): StringValue = TextString(this)
