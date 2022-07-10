@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="pl.dszerszen.bestbefore">
 
+    <uses-permission android:name="android.permission.CAMERA"/>
+
     <application
         android:name=".BestBeforeApp"
         android:allowBackup="true"

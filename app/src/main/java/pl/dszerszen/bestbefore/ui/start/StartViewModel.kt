@@ -41,10 +41,15 @@ class StartViewModel @Inject constructor(
             }
         }
     }
+
+    fun onCameraPermissionResult(hasAccess: Boolean) {
+        _viewState.update { it.copy(hasCameraPermission = hasAccess) }
+    }
 }
 
 data class StartViewState(
     val loaderEnabled: Boolean = true,
     val products: List<Product> = emptyList(),
-    val errorMessage: StringValue? = null
+    val errorMessage: StringValue? = null,
+    val hasCameraPermission: Boolean = false
 )
