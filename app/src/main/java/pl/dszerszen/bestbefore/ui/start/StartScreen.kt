@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,24 +24,40 @@ fun StartScreen(viewModel: StartViewModel) {
     if (state.loaderEnabled) {
         FullScreenLoader()
     } else {
-        ProductsList(state.products)
+        Scaffold(
+            floatingActionButton = {
+            if (state.hasCameraPermission) {
+                FloatingActionButton(
+                    onClick = {},
+                    content = {
+                        Icon(Icons.Rounded.Add, "")
+                    }
+                )
+            }
+        }) {
+            ProductsList(
+                modifier = Modifier.padding(it),
+                products = state.products
+            )
+        }
     }
 }
 
 @Composable
-private fun ProductsList(products: List<Product>) {
+private fun ProductsList(
+    modifier: Modifier = Modifier,
+    products: List<Product>
+) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        contentPadding = PaddingValues(vertical = 8.dp)
+        contentPadding = PaddingValues(all = 8.dp)
     ) {
-        items(products) { item ->
+        items(products, {item -> item.id}) { item ->
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(Color.Cyan)
+                    .background(MaterialTheme.colors.primary)
                     .padding(4.dp)
             ) {
                 Text(item.name)
@@ -50,10 +68,12 @@ private fun ProductsList(products: List<Product>) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showSystemUi = true)
 @Composable
 fun ProductListPreview() {
     BestBeforeTheme {
-        ProductsList(List(10) { Product("Name $it", quantity = it + 1) })
+        ProductsList(
+            products = List(10) { Product("Name $it", quantity = it + 1) }
+        )
     }
 }
