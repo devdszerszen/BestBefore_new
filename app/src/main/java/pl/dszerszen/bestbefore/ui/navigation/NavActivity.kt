@@ -73,7 +73,6 @@ class NavActivity : ComponentActivity() {
         lifecycleScope.launch {
             permissionLauncher.launch(event.permissionName)
             val isGranted = permissionResults.receive()
-            logger.log("ACTIVITY: Dispatched permission result: $isGranted")
             event.isGrantedCallback(isGranted)
 
         }

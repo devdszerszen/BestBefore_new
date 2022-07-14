@@ -45,7 +45,6 @@ fun BarcodeScanner(
 
     DisposableEffect(lifecycleOwner) {
         onDispose {
-            DebugLogger.log(">> Dispose camera view <<")
             cameraUnbinder()
         }
     }

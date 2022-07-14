@@ -1,6 +1,5 @@
 package pl.dszerszen.bestbefore.ui.add
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -16,11 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import pl.dszerszen.bestbefore.R
 import pl.dszerszen.bestbefore.ui.barcode.BarcodeScanner
-import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
-import pl.dszerszen.bestbefore.util.DebugLogger
 
 @Composable
 fun AddProductScreen(viewModel: AddProductViewModel) {
@@ -45,13 +43,13 @@ fun AddProductScreen(viewModel: AddProductViewModel) {
         )
         Spacer(Modifier.height(16.dp))
         if (!state.scannerAvailable) {
-            Text(text = "Scanner disabled, check permissions", color = Color.Red)
+            Text(text = stringResource(R.string.no_camera_permission_message), color = Color.Red)
             Spacer(Modifier.height(16.dp))
         }
-        Text(text = state.barcode ?: "No barcode scanned")
+        Text(text = state.barcode ?: stringResource(R.string.no_barcode))
         Spacer(Modifier.height(16.dp))
         Button(onClick = viewModel::reset) {
-            Text("Reset")
+            Text(stringResource(R.string.reset))
         }
     }
 }
