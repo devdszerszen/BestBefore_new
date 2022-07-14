@@ -1,9 +1,10 @@
-package pl.dszerszen.bestbefore.ui.start
+package pl.dszerszen.bestbefore.ui.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,17 +18,18 @@ import pl.dszerszen.bestbefore.ui.common.FullScreenLoader
 import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
 
 @Composable
-fun StartScreen(viewModel: StartViewModel) {
+fun MainScreen(viewModel: MainViewModel) {
     val state by viewModel.viewState.collectAsState()
+    viewModel.initialize()
     if (state.loaderEnabled) {
         FullScreenLoader()
     } else {
-        ProductsList(state.products)
+        ProductsList(state.products, viewModel::onButtonClick)
     }
 }
 
 @Composable
-private fun ProductsList(products: List<Product>) {
+private fun ProductsList(products: List<Product>, onButtonClicked: () -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -35,6 +37,14 @@ private fun ProductsList(products: List<Product>) {
         verticalArrangement = Arrangement.spacedBy(4.dp),
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
+        item {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onButtonClicked
+            ) {
+                Text("Sample navigation button")
+            }
+        }
         items(products) { item ->
             Row(
                 Modifier
@@ -54,6 +64,9 @@ private fun ProductsList(products: List<Product>) {
 @Composable
 fun ProductListPreview() {
     BestBeforeTheme {
-        ProductsList(List(10) { Product("Name $it", quantity = it + 1) })
+        ProductsList(
+            products = List(10) { Product("Name $it", quantity = it + 1) },
+            onButtonClicked = {}
+        )
     }
 }
