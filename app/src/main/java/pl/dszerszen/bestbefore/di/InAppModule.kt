@@ -9,6 +9,7 @@ import pl.dszerszen.bestbefore.ui.inapp.InAppEvent
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventHandler
 import pl.dszerszen.bestbefore.util.Logger
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -16,6 +17,7 @@ object InAppModule {
     private val inAppEventsChannel = Channel<InAppEvent>(Channel.CONFLATED)
 
     @Provides
+    @Singleton
     fun provideInAppEventDispatcher(logger: Logger): InAppEventDispatcher {
         return object : InAppEventDispatcher {
             override fun dispatchEvent(event: InAppEvent) {
@@ -26,6 +28,7 @@ object InAppModule {
     }
 
     @Provides
+    @Singleton
     fun provideInAppEventHandler(logger: Logger): InAppEventHandler {
         return object : InAppEventHandler {
             override suspend fun handleEvent(onEvent: (InAppEvent) -> Unit) {
