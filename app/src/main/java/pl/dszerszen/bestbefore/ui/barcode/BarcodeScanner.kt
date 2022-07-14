@@ -11,6 +11,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.runtime.*
@@ -40,7 +41,7 @@ fun BarcodeScanner(
     val coroutineScope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
     //Used to unbind camera on dispose view. It does not work out of the box
-    var cameraUnbinder = remember<() -> Unit> { {} }
+    var cameraUnbinder = remember { {} }
 
     DisposableEffect(lifecycleOwner) {
         onDispose {
@@ -50,7 +51,7 @@ fun BarcodeScanner(
     }
     Box(modifier = modifier) {
         AndroidView(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
             factory = { context ->
                 val previewView = PreviewView(context).apply {
                     this.scaleType = scaleType
@@ -101,14 +102,8 @@ fun AnimatedLine(modifier: Modifier, barcode: String?) {
     val transition = rememberInfiniteTransition()
     val alpha by transition.animateFloat(0f, 1f, infiniteRepeatable(tween(1000), RepeatMode.Reverse))
     val color by animateColorAsState(if (barcode != null) Color.Green else Color.Red)
-    Divider(modifier = modifier.alpha(alpha), color = color)
-//    Crossfade(modifier = modifier, targetState = barcode, animationSpec = tween()) {
-//        if (it.isNullOrEmpty()) {
-//
-//        } else {
-//            Text(text = it, color = color)
-//        }
-//    }
+
+    Divider(modifier = modifier.alpha(alpha), color = color, thickness = 2.dp)
 }
 
 suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspendCoroutine { cont ->
