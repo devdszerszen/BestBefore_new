@@ -8,8 +8,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.dszerszen.bestbefore.domain.product.interactor.GetAllProductsUseCase
 import pl.dszerszen.bestbefore.domain.product.model.Product
+import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
+import pl.dszerszen.bestbefore.ui.inapp.navigate
 import pl.dszerszen.bestbefore.ui.navigation.NavScreen
-import pl.dszerszen.bestbefore.ui.navigation.NavigationDispatcher
 import pl.dszerszen.bestbefore.util.Logger
 import pl.dszerszen.bestbefore.util.Response.Error
 import pl.dszerszen.bestbefore.util.Response.Success
@@ -21,7 +22,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val logger: Logger,
     private val getAllProductsUseCase: GetAllProductsUseCase,
-    private val navigationDispatcher: NavigationDispatcher
+    private val inAppEventDispatcher: InAppEventDispatcher,
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(StartViewState())
@@ -46,7 +47,11 @@ class MainViewModel @Inject constructor(
     }
 
     fun onButtonClick() {
-        navigationDispatcher.navigate(NavScreen.Settings)
+        inAppEventDispatcher.navigate(NavScreen.Settings)
+    }
+
+    fun onFloatingButtonClick() {
+        inAppEventDispatcher.navigate(NavScreen.AddProduct)
     }
 }
 

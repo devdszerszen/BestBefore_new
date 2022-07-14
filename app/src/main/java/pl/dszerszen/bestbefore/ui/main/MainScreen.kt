@@ -4,8 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,37 +25,50 @@ fun MainScreen(viewModel: MainViewModel) {
     if (state.loaderEnabled) {
         FullScreenLoader()
     } else {
-        ProductsList(state.products, viewModel::onButtonClick)
+        ProductsList(
+            products = state.products,
+            onButtonClicked = viewModel::onButtonClick,
+            onFloatingButtonClicked = viewModel::onFloatingButtonClick,
+        )
     }
 }
 
 @Composable
-private fun ProductsList(products: List<Product>, onButtonClicked: () -> Unit) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        contentPadding = PaddingValues(vertical = 8.dp)
-    ) {
-        item {
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onButtonClicked
-            ) {
-                Text("Sample navigation button")
-            }
+private fun ProductsList(
+    products: List<Product>,
+    modifier: Modifier = Modifier,
+    onButtonClicked: () -> Unit,
+    onFloatingButtonClicked: () -> Unit
+) {
+    Scaffold(modifier = modifier, floatingActionButton = {
+        FloatingActionButton(onClick = onFloatingButtonClicked) {
+            Icon(Icons.Rounded.AddCircle, "add")
         }
-        items(products) { item ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .background(Color.Cyan)
-                    .padding(4.dp)
-            ) {
-                Text(item.name)
-                Spacer(Modifier.weight(1f))
-                Text(item.quantity.toString())
+    }) { padding ->
+        LazyColumn(
+            modifier = Modifier.padding(padding),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            contentPadding = PaddingValues(vertical = 8.dp)
+        ) {
+            item {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onButtonClicked
+                ) {
+                    Text("Sample navigation button")
+                }
+            }
+            items(products) { item ->
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .background(Color.Cyan)
+                        .padding(4.dp)
+                ) {
+                    Text(item.name)
+                    Spacer(Modifier.weight(1f))
+                    Text(item.quantity.toString())
+                }
             }
         }
     }
@@ -66,7 +80,8 @@ fun ProductListPreview() {
     BestBeforeTheme {
         ProductsList(
             products = List(10) { Product("Name $it", quantity = it + 1) },
-            onButtonClicked = {}
+            onButtonClicked = {},
+            onFloatingButtonClicked = {}
         )
     }
 }
