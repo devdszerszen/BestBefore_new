@@ -1,12 +1,11 @@
-package pl.dszerszen.bestbefore.ui.start
+package pl.dszerszen.bestbefore.ui.main
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,45 +18,38 @@ import pl.dszerszen.bestbefore.ui.common.FullScreenLoader
 import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
 
 @Composable
-fun StartScreen(viewModel: StartViewModel) {
+fun MainScreen(viewModel: MainViewModel) {
     val state by viewModel.viewState.collectAsState()
+    viewModel.initialize()
     if (state.loaderEnabled) {
         FullScreenLoader()
     } else {
-        Scaffold(
-            floatingActionButton = {
-            if (state.hasCameraPermission) {
-                FloatingActionButton(
-                    onClick = {},
-                    content = {
-                        Icon(Icons.Rounded.Add, "")
-                    }
-                )
-            }
-        }) {
-            ProductsList(
-                modifier = Modifier.padding(it),
-                products = state.products
-            )
-        }
+        ProductsList(state.products, viewModel::onButtonClick)
     }
 }
 
 @Composable
-private fun ProductsList(
-    modifier: Modifier = Modifier,
-    products: List<Product>
-) {
+private fun ProductsList(products: List<Product>, onButtonClicked: () -> Unit) {
     LazyColumn(
-        modifier = modifier,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        contentPadding = PaddingValues(all = 8.dp)
+        contentPadding = PaddingValues(vertical = 8.dp)
     ) {
-        items(products, {item -> item.id}) { item ->
+        item {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onButtonClicked
+            ) {
+                Text("Sample navigation button")
+            }
+        }
+        items(products) { item ->
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colors.primary)
+                    .background(Color.Cyan)
                     .padding(4.dp)
             ) {
                 Text(item.name)
@@ -68,12 +60,13 @@ private fun ProductsList(
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun ProductListPreview() {
     BestBeforeTheme {
         ProductsList(
-            products = List(10) { Product("Name $it", quantity = it + 1) }
+            products = List(10) { Product("Name $it", quantity = it + 1) },
+            onButtonClicked = {}
         )
     }
 }

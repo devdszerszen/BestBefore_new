@@ -17,7 +17,7 @@
         android:theme="@style/Theme.BestBefore"
         tools:targetApi="31">
         <activity
-            android:name=".ui.start.StartActivity"
+            android:name=".ui.navigation.NavActivity"
             android:exported="true"
             android:theme="@style/Theme.BestBefore">
             <intent-filter>
