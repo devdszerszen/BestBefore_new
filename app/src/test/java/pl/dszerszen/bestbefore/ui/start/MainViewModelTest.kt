@@ -2,20 +2,22 @@ package pl.dszerszen.bestbefore.ui.start
 
 import io.mockk.coEvery
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import pl.dszerszen.bestbefore.TestCoroutineExtension
 import pl.dszerszen.bestbefore.domain.product.interactor.GetAllProductsUseCase
 import pl.dszerszen.bestbefore.domain.product.model.Product
+import pl.dszerszen.bestbefore.ui.inapp.InAppEvent
+import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
 import pl.dszerszen.bestbefore.ui.main.MainViewModel
-import pl.dszerszen.bestbefore.ui.navigation.NavScreen
-import pl.dszerszen.bestbefore.ui.navigation.NavigationDispatcher
 import pl.dszerszen.bestbefore.util.Logger
 import pl.dszerszen.bestbefore.util.Response
 import pl.dszerszen.bestbefore.util.asStringValue
@@ -28,13 +30,15 @@ internal class MainViewModelTest {
 
     private val logger: Logger = mockk(relaxed = true)
     private val getAllProductsUseCase: GetAllProductsUseCase = mockk(relaxed = true)
-    private val navigationDispatcher: NavigationDispatcher = mockk(relaxed = true)
+    private val inAppEventDispatcher: InAppEventDispatcher = mockk(relaxed = true)
+    val eventSlot = slot<InAppEvent>()
 
     lateinit var sut: MainViewModel
 
     @BeforeEach
     fun setup() {
-        sut = MainViewModel(logger, getAllProductsUseCase, navigationDispatcher)
+        eventSlot.clear()
+        sut = MainViewModel(logger, getAllProductsUseCase, inAppEventDispatcher)
     }
 
     @Test
@@ -75,6 +79,7 @@ internal class MainViewModelTest {
     @Test
     fun `should navigate to settings on button clicked`() {
         sut.onButtonClick()
-        verify(exactly = 1) { navigationDispatcher.navigate(NavScreen.Settings) }
+        verify(exactly = 1) { inAppEventDispatcher.dispatchEvent(capture(eventSlot)) }
+        assertInstanceOf(InAppEvent.Navigate::class.java, eventSlot.captured)
     }
 }
