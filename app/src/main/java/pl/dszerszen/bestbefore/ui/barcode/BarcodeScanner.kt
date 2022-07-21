@@ -13,6 +13,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +26,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.google.mlkit.vision.barcode.common.Barcode
 import kotlinx.coroutines.launch
 import pl.dszerszen.bestbefore.ui.theme.dimens
 import pl.dszerszen.bestbefore.util.DebugLogger
@@ -36,7 +39,8 @@ fun BarcodeScanner(
     scannedBarcode: String? = null,
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
-    barcodeListener: (List<Barcode>) -> Unit,
+    onBarcodeClosed: (() -> Unit)? = null,
+    onBarcodeScanned: (List<String>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -66,7 +70,7 @@ fun BarcodeScanner(
                     .setTargetResolution(Size(1280, 720))
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
-                    .apply { setAnalyzer(context.executor, BarcodeAnalyser(onBarcodeDetected = barcodeListener)) }
+                    .apply { setAnalyzer(context.executor, BarcodeAnalyser(onBarcodeDetected = onBarcodeScanned)) }
 
                 coroutineScope.launch {
                     val cameraProvider = context.getCameraProvider().also {
@@ -93,6 +97,16 @@ fun BarcodeScanner(
                 .padding(horizontal = dimens.large),
             barcode = scannedBarcode
         )
+        if (onBarcodeClosed != null) {
+            IconButton(
+                onClick = onBarcodeClosed,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(dimens.small)
+            ) {
+                Icon(Icons.Outlined.Close, "close barcode scanner")
+            }
+        }
     }
 }
 

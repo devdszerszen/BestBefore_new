@@ -12,7 +12,7 @@ import pl.dszerszen.bestbefore.util.Logger
 
 class BarcodeAnalyser(
     private val logger: Logger? = DebugLogger,
-    private val onBarcodeDetected: (List<Barcode>) -> Unit
+    private val onBarcodeDetected: (List<String>) -> Unit
 ) : ImageAnalysis.Analyzer {
 
     @SuppressLint("UnsafeOptInUsageError")
@@ -31,7 +31,7 @@ class BarcodeAnalyser(
                 .addOnCompleteListener {
                     if (it.isSuccessful && it.result.isNotEmpty()) {
                         DebugLogger.log("--Barcode-- found some barcodes")
-                        onBarcodeDetected(it.result)
+                        onBarcodeDetected(it.result.mapNotNull { barcode -> barcode.rawValue })
                     } else {
                         DebugLogger.log("--Barcode-- finished with NO barcodes detected")
                     }

@@ -40,7 +40,8 @@ fun AddProductScreen(viewModel: AddProductViewModel) {
                 .clip(scannerBorderShape)
                 .border(dimens.small, MaterialTheme.colors.primary, scannerBorderShape),
             scannedBarcode = state.barcode,
-            barcodeListener = viewModel::onBarcodeScanned
+            onBarcodeClosed = viewModel::onBarcodeScannerClosed,
+            onBarcodeScanned = viewModel::onBarcodeScanned
         )
         Spacer(Modifier.height(dimens.large))
         if (!state.scannerAvailable) {
