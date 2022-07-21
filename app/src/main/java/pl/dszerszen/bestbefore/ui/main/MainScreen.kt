@@ -1,22 +1,24 @@
 package pl.dszerszen.bestbefore.ui.main
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import pl.dszerszen.bestbefore.domain.product.model.Product
 import pl.dszerszen.bestbefore.ui.common.FullScreenLoader
 import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
+import pl.dszerszen.bestbefore.ui.theme.dimens
 
 @Composable
 fun MainScreen(viewModel: MainViewModel) {
@@ -26,6 +28,7 @@ fun MainScreen(viewModel: MainViewModel) {
         FullScreenLoader()
     } else {
         ProductsList(
+            modifier = Modifier.padding(horizontal = dimens.medium),
             products = state.products,
             onButtonClicked = viewModel::onButtonClick,
             onFloatingButtonClicked = viewModel::onFloatingButtonClick,
@@ -47,8 +50,8 @@ private fun ProductsList(
     }) { padding ->
         LazyColumn(
             modifier = Modifier.padding(padding),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
+            verticalArrangement = Arrangement.spacedBy(dimens.small),
+            contentPadding = PaddingValues(vertical = dimens.medium)
         ) {
             item {
                 Button(
@@ -62,8 +65,8 @@ private fun ProductsList(
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .background(Color.Cyan)
-                        .padding(4.dp)
+                        .background(colors.primary)
+                        .padding(dimens.medium)
                 ) {
                     Text(item.name)
                     Spacer(Modifier.weight(1f))
@@ -74,7 +77,8 @@ private fun ProductsList(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ProductListPreview() {
     BestBeforeTheme {

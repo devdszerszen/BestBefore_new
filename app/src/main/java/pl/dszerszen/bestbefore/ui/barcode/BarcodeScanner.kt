@@ -10,7 +10,6 @@ import androidx.camera.view.PreviewView
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
@@ -25,6 +24,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.google.mlkit.vision.barcode.common.Barcode
 import kotlinx.coroutines.launch
+import pl.dszerszen.bestbefore.ui.theme.dimens
 import pl.dszerszen.bestbefore.util.DebugLogger
 import java.util.concurrent.Executor
 import kotlin.coroutines.resume
@@ -90,7 +90,7 @@ fun BarcodeScanner(
         AnimatedLine(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = dimens.large),
             barcode = scannedBarcode
         )
     }

@@ -1,7 +1,8 @@
 package pl.dszerszen.bestbefore.ui.common
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
@@ -12,16 +13,16 @@ import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
 
 @Composable
 fun FullScreenLoader() {
-    Column(
+    Box(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator()
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Day")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Night")
 @Composable
 fun FullScreenLoaderPreview() {
     BestBeforeTheme{

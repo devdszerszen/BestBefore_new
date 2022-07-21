@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.dszerszen.bestbefore.R
 import pl.dszerszen.bestbefore.ui.barcode.BarcodeScanner
+import pl.dszerszen.bestbefore.ui.theme.dimens
 
 @Composable
 fun AddProductScreen(viewModel: AddProductViewModel) {
@@ -30,24 +31,24 @@ fun AddProductScreen(viewModel: AddProductViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(dimens.large),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BarcodeScanner(
             modifier = Modifier
                 .height(scannerViewHeight)
                 .clip(scannerBorderShape)
-                .border(2.dp, MaterialTheme.colors.primary, scannerBorderShape),
+                .border(dimens.small, MaterialTheme.colors.primary, scannerBorderShape),
             scannedBarcode = state.barcode,
             barcodeListener = viewModel::onBarcodeScanned
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(dimens.large))
         if (!state.scannerAvailable) {
             Text(text = stringResource(R.string.no_camera_permission_message), color = Color.Red)
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(dimens.large))
         }
         Text(text = state.barcode ?: stringResource(R.string.no_barcode))
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(dimens.large))
         Button(onClick = viewModel::reset) {
             Text(stringResource(R.string.reset))
         }
