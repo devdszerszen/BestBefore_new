@@ -10,14 +10,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.dszerszen.bestbefore.domain.config.ConfigRepository
 import pl.dszerszen.bestbefore.ui.add.ScannerStatus.DISABLED
-import pl.dszerszen.bestbefore.ui.inapp.RequestPermissionUseCase
+import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
+import pl.dszerszen.bestbefore.ui.inapp.requestPermission
 import pl.dszerszen.bestbefore.util.Logger
 import javax.inject.Inject
 
 @HiltViewModel
 class AddProductViewModel @Inject constructor(
     private val logger: Logger,
-    private val requestPermissionUseCase: RequestPermissionUseCase,
+    private val inAppEventHandler: InAppEventDispatcher,
     private val configRepository: ConfigRepository
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(AddProductViewState())
@@ -26,11 +27,10 @@ class AddProductViewModel @Inject constructor(
     init {
         if (configRepository.getConfig().isBarcodeScannerEnabled) {
             viewModelScope.launch {
-                val isCameraPermissionGranted = requestPermissionUseCase(Manifest.permission.CAMERA)
+                val hasCameraPermission = inAppEventHandler.requestPermission(Manifest.permission.CAMERA)
                 _viewState.update {
                     it.copy(
-                        scannerAvailable = isCameraPermissionGranted,
-                        scannerStatus = if (isCameraPermissionGranted) ScannerStatus.READY_TO_SCAN else DISABLED
+                        scannerStatus = if (hasCameraPermission) ScannerStatus.READY_TO_SCAN else DISABLED
                     )
                 }
             }
@@ -58,11 +58,10 @@ class AddProductViewModel @Inject constructor(
 }
 
 data class AddProductViewState(
-    val scannerAvailable: Boolean = false,
     val barcode: String? = null,
     val scannerStatus: ScannerStatus = DISABLED
 ) {
-    fun canShowScanner() = scannerAvailable && scannerStatus.enabled
+    fun canShowScanner() = scannerStatus.enabled
 }
 
 enum class ScannerStatus(val enabled: Boolean = false) {

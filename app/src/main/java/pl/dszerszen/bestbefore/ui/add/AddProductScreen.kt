@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import pl.dszerszen.bestbefore.R
@@ -44,10 +43,6 @@ fun AddProductScreen(viewModel: AddProductViewModel) {
             onBarcodeScanned = viewModel::onBarcodeScanned
         )
         Spacer(Modifier.height(dimens.large))
-        if (!state.scannerAvailable) {
-            Text(text = stringResource(R.string.no_camera_permission_message), color = Color.Red)
-            Spacer(Modifier.height(dimens.large))
-        }
         Text(text = state.barcode ?: stringResource(R.string.no_barcode))
         Spacer(Modifier.height(dimens.large))
         Button(onClick = viewModel::reset) {

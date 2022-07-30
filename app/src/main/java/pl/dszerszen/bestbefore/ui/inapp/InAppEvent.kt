@@ -1,7 +1,6 @@
 package pl.dszerszen.bestbefore.ui.inapp
 
 import pl.dszerszen.bestbefore.ui.navigation.NavScreen
-import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -19,16 +18,11 @@ interface InAppEventHandler {
     suspend fun handleEvent(onEvent: (InAppEvent) -> Unit)
 }
 
-class RequestPermissionUseCase @Inject constructor(
-    private val inAppEventDispatcher: InAppEventDispatcher
-) {
-    suspend operator fun invoke(permissionName: String): Boolean {
-        return suspendCoroutine { continuation ->
-            inAppEventDispatcher.dispatchEvent(InAppEvent.RequestPermission(permissionName) { result ->
-                continuation.resume(result)
-            })
-        }
-    }
-}
-
 fun InAppEventDispatcher.navigate(target: NavScreen) = dispatchEvent(InAppEvent.Navigate(target))
+
+suspend fun InAppEventDispatcher.requestPermission(permissionName: String): Boolean =
+    suspendCoroutine { continuation ->
+        dispatchEvent(InAppEvent.RequestPermission(permissionName) { hasPermisison ->
+            continuation.resume(hasPermisison)
+        })
+    }

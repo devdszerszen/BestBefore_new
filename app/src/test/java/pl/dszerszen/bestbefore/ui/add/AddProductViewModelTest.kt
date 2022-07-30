@@ -1,30 +1,41 @@
 package pl.dszerszen.bestbefore.ui.add
 
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit5.MockKExtension
+import io.mockk.mockkStatic
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import pl.dszerszen.bestbefore.TestCoroutineExtension
 import pl.dszerszen.bestbefore.domain.config.ConfigRepository
 import pl.dszerszen.bestbefore.domain.config.model.GlobalConfig
 import pl.dszerszen.bestbefore.ui.add.ScannerStatus.*
-import pl.dszerszen.bestbefore.ui.inapp.RequestPermissionUseCase
+import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
+import pl.dszerszen.bestbefore.ui.inapp.requestPermission
 import pl.dszerszen.bestbefore.util.Logger
 import pl.dszerszen.bestbefore.withValue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@ExtendWith(TestCoroutineExtension::class)
+@ExtendWith(TestCoroutineExtension::class, MockKExtension::class)
 internal class AddProductViewModelTest {
 
-    private val logger: Logger = mockk(relaxed = true)
-    private val requestPermissionUseCase: RequestPermissionUseCase = mockk(relaxed = true)
-    private val configRepository: ConfigRepository = mockk(relaxed = true)
+    @RelaxedMockK
+    private lateinit var logger: Logger
+
+    @RelaxedMockK
+    private lateinit var inAppEventDispatcher: InAppEventDispatcher
+
+    @RelaxedMockK
+    private lateinit var configRepository: ConfigRepository
 
     lateinit var sut: AddProductViewModel
 
@@ -32,10 +43,11 @@ internal class AddProductViewModelTest {
         scannerEnabledInGlobalConfig: Boolean = true,
         cameraPermissionEnabled: Boolean = true
     ) {
-        coEvery { requestPermissionUseCase.invoke(any()) } returns cameraPermissionEnabled
+        mockkStatic(InAppEventDispatcher::requestPermission)
+        coEvery { inAppEventDispatcher.requestPermission(any()) } returns cameraPermissionEnabled
         every { configRepository.getConfig() } returns
                 GlobalConfig().copy(isBarcodeScannerEnabled = scannerEnabledInGlobalConfig)
-        sut = AddProductViewModel(logger, requestPermissionUseCase, configRepository)
+        sut = AddProductViewModel(logger, inAppEventDispatcher, configRepository)
     }
 
     @Test
@@ -46,8 +58,8 @@ internal class AddProductViewModelTest {
         advanceUntilIdle()
         //Assert
         sut.viewState.withValue {
-            assertEquals(true, canShowScanner())
-            assertEquals(READY_TO_SCAN, scannerStatus)
+            canShowScanner().shouldBeTrue()
+            scannerStatus shouldBe READY_TO_SCAN
         }
     }
 
@@ -59,8 +71,8 @@ internal class AddProductViewModelTest {
         advanceUntilIdle()
         //Assert
         sut.viewState.withValue {
-            assertEquals(false, canShowScanner())
-            assertEquals(DISABLED, scannerStatus)
+            canShowScanner().shouldBeFalse()
+            scannerStatus shouldBe DISABLED
         }
     }
 
@@ -71,7 +83,7 @@ internal class AddProductViewModelTest {
         //Act
         advanceUntilIdle()
         //Assert
-        coVerify(exactly = 1) { requestPermissionUseCase.invoke(any()) }
+        coVerify(exactly = 1) { inAppEventDispatcher.requestPermission(any()) }
 
     }
 
@@ -81,7 +93,7 @@ internal class AddProductViewModelTest {
         setupSut(false)
         //Act
         //Assert
-        coVerify(exactly = 0) { requestPermissionUseCase.invoke(any()) }
+        coVerify(exactly = 0) { inAppEventDispatcher.requestPermission(any()) }
     }
 
     @Test
@@ -93,8 +105,8 @@ internal class AddProductViewModelTest {
         sut.onBarcodeScanned(emptyList())
         //Assert
         sut.viewState.withValue {
-            assertEquals(null, barcode)
-            assertEquals(READY_TO_SCAN, scannerStatus)
+            barcode.shouldBeNull()
+            scannerStatus shouldBe READY_TO_SCAN
         }
     }
 
@@ -107,8 +119,8 @@ internal class AddProductViewModelTest {
         sut.onBarcodeScanned(listOf(SAMPLE_BARCODE))
         //Assert
         sut.viewState.withValue {
-            assertEquals(SAMPLE_BARCODE, barcode)
-            assertEquals(SCANNED_SUCCESSFULLY, scannerStatus)
+            barcode shouldBe SAMPLE_BARCODE
+            scannerStatus shouldBe SCANNED_SUCCESSFULLY
         }
     }
 
@@ -121,7 +133,7 @@ internal class AddProductViewModelTest {
         sut.onBarcodeScannerClosed()
         //Assert
         sut.viewState.withValue {
-            assertEquals(DISMISSED, scannerStatus)
+            scannerStatus shouldBe DISMISSED
         }
     }
 
