@@ -8,16 +8,15 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.junit5.MockKExtension
-import io.mockk.mockkStatic
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import pl.dszerszen.bestbefore.TestCoroutineExtension
+import pl.dszerszen.bestbefore.BaseTest
 import pl.dszerszen.bestbefore.domain.config.ConfigRepository
 import pl.dszerszen.bestbefore.domain.config.model.GlobalConfig
+import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.BarcodeScanned
+import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.ScannerClosed
 import pl.dszerszen.bestbefore.ui.add.ScannerStatus.*
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
 import pl.dszerszen.bestbefore.ui.inapp.requestPermission
@@ -25,8 +24,7 @@ import pl.dszerszen.bestbefore.util.Logger
 import pl.dszerszen.bestbefore.withValue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@ExtendWith(TestCoroutineExtension::class, MockKExtension::class)
-internal class AddProductViewModelTest {
+internal class AddProductViewModelTest : BaseTest() {
 
     @RelaxedMockK
     private lateinit var logger: Logger
@@ -43,7 +41,7 @@ internal class AddProductViewModelTest {
         scannerEnabledInGlobalConfig: Boolean = true,
         cameraPermissionEnabled: Boolean = true
     ) {
-        mockkStatic(InAppEventDispatcher::requestPermission)
+        //mockkStatic(InAppEventDispatcher::requestPermission)
         coEvery { inAppEventDispatcher.requestPermission(any()) } returns cameraPermissionEnabled
         every { configRepository.getConfig() } returns
                 GlobalConfig().copy(isBarcodeScannerEnabled = scannerEnabledInGlobalConfig)
@@ -102,7 +100,7 @@ internal class AddProductViewModelTest {
         setupSut()
         //Act
         advanceUntilIdle()
-        sut.onBarcodeScanned(emptyList())
+        sut.onUiIntent(BarcodeScanned(emptyList()))
         //Assert
         sut.viewState.withValue {
             barcode.shouldBeNull()
@@ -116,7 +114,7 @@ internal class AddProductViewModelTest {
         setupSut()
         //Act
         advanceUntilIdle()
-        sut.onBarcodeScanned(listOf(SAMPLE_BARCODE))
+        sut.onUiIntent(BarcodeScanned(listOf(SAMPLE_BARCODE)))
         //Assert
         sut.viewState.withValue {
             barcode shouldBe SAMPLE_BARCODE
@@ -130,7 +128,7 @@ internal class AddProductViewModelTest {
         setupSut()
         //Act
         advanceUntilIdle()
-        sut.onBarcodeScannerClosed()
+        sut.onUiIntent(ScannerClosed)
         //Assert
         sut.viewState.withValue {
             scannerStatus shouldBe DISMISSED

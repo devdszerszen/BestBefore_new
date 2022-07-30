@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="pl.dszerszen.bestbefore">
 
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".BestBeforeApp"
@@ -19,7 +19,8 @@
         <activity
             android:name=".ui.navigation.NavActivity"
             android:exported="true"
-            android:theme="@style/Theme.BestBefore">
+            android:theme="@style/Theme.BestBefore"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

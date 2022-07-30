@@ -3,4 +3,5 @@
     <string name="no_camera_permission_message">Brak wyrażonej zgody na dostęp do aparatu</string>
     <string name="no_barcode">Brak zeskanowanego kodu</string>
     <string name="reset">Resetuj</string>
+    <string name="save">Zapisz</string>
 </resources>
