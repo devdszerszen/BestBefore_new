@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.dszerszen.bestbefore.domain.config.ConfigRepository
+import pl.dszerszen.bestbefore.ui.add.ScannerStatus.ACTIVE
 import pl.dszerszen.bestbefore.ui.add.ScannerStatus.DISABLED
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
 import pl.dszerszen.bestbefore.ui.inapp.requestPermission
@@ -24,13 +25,15 @@ class AddProductViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(AddProductViewState())
     val viewState = _viewState.asStateFlow()
 
+    private var scannerEnabled = false
+
     init {
         if (configRepository.getConfig().isBarcodeScannerEnabled) {
             viewModelScope.launch {
-                val hasCameraPermission = inAppEventHandler.requestPermission(Manifest.permission.CAMERA)
+                scannerEnabled = inAppEventHandler.requestPermission(Manifest.permission.CAMERA)
                 _viewState.update {
                     it.copy(
-                        scannerStatus = if (hasCameraPermission) ScannerStatus.READY_TO_SCAN else DISABLED
+                        scannerStatus = resolveScannerStatus()
                     )
                 }
             }
@@ -42,7 +45,7 @@ class AddProductViewModel @Inject constructor(
             _viewState.update {
                 it.copy(
                     barcode = barcodes.first(),
-                    scannerStatus = ScannerStatus.SCANNED_SUCCESSFULLY
+                    scannerStatus = ScannerStatus.SUCCESS
                 )
             }
         }
@@ -53,22 +56,24 @@ class AddProductViewModel @Inject constructor(
     }
 
     fun reset() {
-        _viewState.update { it.copy(barcode = null, scannerStatus = ScannerStatus.READY_TO_SCAN) }
+        _viewState.update { it.copy(barcode = null, scannerStatus = resolveScannerStatus() ) }
     }
+
+    private fun resolveScannerStatus(): ScannerStatus = if (scannerEnabled) ACTIVE else DISABLED
 }
 
 data class AddProductViewState(
     val barcode: String? = null,
     val scannerStatus: ScannerStatus = DISABLED
 ) {
-    fun canShowScanner() = scannerStatus.enabled
+    val scannerEnabled = scannerStatus.enabled
 }
 
 enum class ScannerStatus(val enabled: Boolean = false) {
     DISABLED,
-    READY_TO_SCAN(true),
-    SCANNED_SUCCESSFULLY,
-    DISMISSED
+    DISMISSED,
+    ACTIVE(true),
+    SUCCESS
 }
 
 

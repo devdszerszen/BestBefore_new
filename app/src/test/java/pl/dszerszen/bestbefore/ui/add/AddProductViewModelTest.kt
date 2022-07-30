@@ -58,8 +58,8 @@ internal class AddProductViewModelTest {
         advanceUntilIdle()
         //Assert
         sut.viewState.withValue {
-            canShowScanner().shouldBeTrue()
-            scannerStatus shouldBe READY_TO_SCAN
+            scannerEnabled.shouldBeTrue()
+            scannerStatus shouldBe ACTIVE
         }
     }
 
@@ -71,7 +71,7 @@ internal class AddProductViewModelTest {
         advanceUntilIdle()
         //Assert
         sut.viewState.withValue {
-            canShowScanner().shouldBeFalse()
+            scannerEnabled.shouldBeFalse()
             scannerStatus shouldBe DISABLED
         }
     }
@@ -106,7 +106,7 @@ internal class AddProductViewModelTest {
         //Assert
         sut.viewState.withValue {
             barcode.shouldBeNull()
-            scannerStatus shouldBe READY_TO_SCAN
+            scannerStatus shouldBe ACTIVE
         }
     }
 
@@ -120,7 +120,7 @@ internal class AddProductViewModelTest {
         //Assert
         sut.viewState.withValue {
             barcode shouldBe SAMPLE_BARCODE
-            scannerStatus shouldBe SCANNED_SUCCESSFULLY
+            scannerStatus shouldBe SUCCESS
         }
     }
 

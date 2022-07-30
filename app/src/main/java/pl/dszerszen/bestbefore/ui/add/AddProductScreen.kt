@@ -1,6 +1,8 @@
 package pl.dszerszen.bestbefore.ui.add
 
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,7 +25,6 @@ import pl.dszerszen.bestbefore.ui.theme.dimens
 @Composable
 fun AddProductScreen(viewModel: AddProductViewModel) {
     val state by viewModel.viewState.collectAsState()
-    val scannerViewHeight by animateDpAsState(if (state.canShowScanner()) 256.dp else 0.dp)
     val scannerBorderShape = RoundedCornerShape(24.dp)
 
     LaunchedEffect(Unit) { viewModel.reset() }
@@ -33,15 +34,21 @@ fun AddProductScreen(viewModel: AddProductViewModel) {
             .padding(dimens.large),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        BarcodeScanner(
-            modifier = Modifier
-                .height(scannerViewHeight)
-                .clip(scannerBorderShape)
-                .border(dimens.small, MaterialTheme.colors.primary, scannerBorderShape),
-            scannedBarcode = state.barcode,
-            onBarcodeClosed = viewModel::onBarcodeScannerClosed,
-            onBarcodeScanned = viewModel::onBarcodeScanned
-        )
+        AnimatedVisibility(
+            visible = state.scannerEnabled,
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
+            BarcodeScanner(
+                modifier = Modifier
+                    .height(256.dp)
+                    .clip(scannerBorderShape)
+                    .border(dimens.small, MaterialTheme.colors.primary, scannerBorderShape),
+                scannedBarcode = state.barcode,
+                onBarcodeClosed = viewModel::onBarcodeScannerClosed,
+                onBarcodeScanned = viewModel::onBarcodeScanned
+            )
+        }
         Spacer(Modifier.height(dimens.large))
         Text(text = state.barcode ?: stringResource(R.string.no_barcode))
         Spacer(Modifier.height(dimens.large))
