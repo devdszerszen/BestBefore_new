@@ -75,6 +75,7 @@ dependencies {
     testImplementation "io.mockk:mockk:$mockk_version"
     testImplementation "io.mockk:mockk-agent-jvm:$mockk_version"
     testImplementation "io.mockk:mockk-common:$mockk_version"
+    testImplementation "io.kotest:kotest-assertions-core:$kotest_version"
     //Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
