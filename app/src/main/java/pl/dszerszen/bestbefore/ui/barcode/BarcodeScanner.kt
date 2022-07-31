@@ -11,6 +11,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -20,7 +21,6 @@ import androidx.compose.material.icons.outlined.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -113,10 +113,15 @@ fun BarcodeScanner(
 @Composable
 fun AnimatedLine(modifier: Modifier, barcode: String?) {
     val transition = rememberInfiniteTransition()
-    val alpha by transition.animateFloat(0f, 1f, infiniteRepeatable(tween(1000), RepeatMode.Reverse))
+    val offset by transition.animateFloat(-120f, 120f, infiniteRepeatable(tween(1600, easing = LinearEasing), RepeatMode.Reverse))
     val color by animateColorAsState(if (barcode != null) Color.Green else Color.Red)
 
-    Divider(modifier = modifier.alpha(alpha), color = color, thickness = 2.dp)
+    Divider(
+        modifier = modifier
+            .offset(y = offset.dp),
+        color = color,
+        thickness = 1.dp
+    )
 }
 
 suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspendCoroutine { cont ->
