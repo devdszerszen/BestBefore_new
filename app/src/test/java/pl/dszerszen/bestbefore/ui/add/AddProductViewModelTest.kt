@@ -17,7 +17,6 @@ import pl.dszerszen.bestbefore.domain.config.ConfigRepository
 import pl.dszerszen.bestbefore.domain.config.model.GlobalConfig
 import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.BarcodeScanned
 import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.ScannerClosed
-import pl.dszerszen.bestbefore.ui.add.ScannerStatus.*
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
 import pl.dszerszen.bestbefore.ui.inapp.requestPermission
 import pl.dszerszen.bestbefore.util.Logger
@@ -41,7 +40,6 @@ internal class AddProductViewModelTest : BaseTest() {
         scannerEnabledInGlobalConfig: Boolean = true,
         cameraPermissionEnabled: Boolean = true
     ) {
-        //mockkStatic(InAppEventDispatcher::requestPermission)
         coEvery { inAppEventDispatcher.requestPermission(any()) } returns cameraPermissionEnabled
         every { configRepository.getConfig() } returns
                 GlobalConfig().copy(isBarcodeScannerEnabled = scannerEnabledInGlobalConfig)
@@ -56,8 +54,8 @@ internal class AddProductViewModelTest : BaseTest() {
         advanceUntilIdle()
         //Assert
         sut.viewState.withValue {
-            scannerEnabled.shouldBeTrue()
-            scannerStatus shouldBe ACTIVE
+            canUseScanner.shouldBeTrue()
+            isDuringScanning.shouldBeTrue()
         }
     }
 
@@ -69,8 +67,8 @@ internal class AddProductViewModelTest : BaseTest() {
         advanceUntilIdle()
         //Assert
         sut.viewState.withValue {
-            scannerEnabled.shouldBeFalse()
-            scannerStatus shouldBe DISABLED
+            canUseScanner.shouldBeFalse()
+            isDuringScanning.shouldBeFalse()
         }
     }
 
@@ -86,7 +84,7 @@ internal class AddProductViewModelTest : BaseTest() {
     }
 
     @Test
-    fun `should not check camera permission when scanner disabled in global config`() = runTest {
+    fun `should NOT check camera permission when scanner disabled in global config`() = runTest {
         //Arrange
         setupSut(false)
         //Act
@@ -103,13 +101,13 @@ internal class AddProductViewModelTest : BaseTest() {
         sut.onUiIntent(BarcodeScanned(emptyList()))
         //Assert
         sut.viewState.withValue {
-            barcode.shouldBeNull()
-            scannerStatus shouldBe ACTIVE
+            scannedBarcode.shouldBeNull()
+            isDuringScanning.shouldBeTrue()
         }
     }
 
     @Test
-    fun `should update state and set scanned barcode after successfull scan`() = runTest {
+    fun `should update state and set scanned barcode after successful scan`() = runTest {
         //Arrange
         setupSut()
         //Act
@@ -117,8 +115,8 @@ internal class AddProductViewModelTest : BaseTest() {
         sut.onUiIntent(BarcodeScanned(listOf(SAMPLE_BARCODE)))
         //Assert
         sut.viewState.withValue {
-            barcode shouldBe SAMPLE_BARCODE
-            scannerStatus shouldBe SUCCESS
+            scannedBarcode shouldBe SAMPLE_BARCODE
+            isDuringScanning.shouldBeFalse()
         }
     }
 
@@ -131,7 +129,7 @@ internal class AddProductViewModelTest : BaseTest() {
         sut.onUiIntent(ScannerClosed)
         //Assert
         sut.viewState.withValue {
-            scannerStatus shouldBe DISMISSED
+            isDuringScanning.shouldBeFalse()
         }
     }
 

@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.dszerszen.bestbefore.domain.config.ConfigRepository
-import pl.dszerszen.bestbefore.ui.add.ScannerStatus.DISABLED
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
 import pl.dszerszen.bestbefore.ui.inapp.requestPermission
 import pl.dszerszen.bestbefore.util.Logger
@@ -26,15 +25,14 @@ class AddProductViewModel @Inject constructor(
     private val _viewState = MutableStateFlow(AddProductViewState())
     val viewState = _viewState.asStateFlow()
 
-    private var scannerEnabled = false
-
     init {
         if (configRepository.getConfig().isBarcodeScannerEnabled) {
             viewModelScope.launch {
-                scannerEnabled = inAppEventHandler.requestPermission(Manifest.permission.CAMERA)
+                val hasPermission = inAppEventHandler.requestPermission(Manifest.permission.CAMERA)
                 _viewState.update {
                     it.copy(
-                        scannerStatus = resolveScannerStatus()
+                        canUseScanner = hasPermission,
+                        isDuringScanning = hasPermission
                     )
                 }
             }
@@ -46,9 +44,9 @@ class AddProductViewModel @Inject constructor(
             is AddProductUiIntent.BarcodeScanned -> onBarcodeScanned(intent.barcodes)
             is AddProductUiIntent.DateChanged -> onDateSelected(intent.date)
             is AddProductUiIntent.NameChanged -> onNameChanged(intent.name)
-            AddProductUiIntent.ResetClicked -> reset()
             AddProductUiIntent.ScannerClosed -> onBarcodeScannerClosed()
             AddProductUiIntent.SubmitClicked -> onSubmitClicked()
+            AddProductUiIntent.Closed -> resetState()
         }
     }
 
@@ -56,19 +54,15 @@ class AddProductViewModel @Inject constructor(
         if (barcodes.isNotEmpty()) {
             _viewState.update {
                 it.copy(
-                    barcode = barcodes.first(),
-                    scannerStatus = ScannerStatus.SUCCESS
+                    scannedBarcode = barcodes.first(),
+                    isDuringScanning = false
                 )
             }
         }
     }
 
     private fun onBarcodeScannerClosed() {
-        _viewState.update { it.copy(scannerStatus = ScannerStatus.DISMISSED) }
-    }
-
-    private fun reset() {
-        _viewState.update { it.copy(barcode = null, scannerStatus = resolveScannerStatus()) }
+        _viewState.update { it.copy(isDuringScanning = false) }
     }
 
     private fun onNameChanged(name: String) {
@@ -80,39 +74,34 @@ class AddProductViewModel @Inject constructor(
     }
 
     private fun onSubmitClicked() {
-        with(_viewState.value) {
-            logger.log(">> onSubmitClicked")
-            logger.log("Name: $name")
-            logger.log("Date: $date")
-        }
+        //TODO save item
     }
 
-    private fun resolveScannerStatus(): ScannerStatus = if (scannerEnabled) ScannerStatus.ACTIVE else DISABLED
+    private fun resetState() {
+        _viewState.update { oldState ->
+            AddProductViewState(
+                canUseScanner = oldState.canUseScanner,
+                isDuringScanning = oldState.canUseScanner
+            )
+        }
+    }
 }
 
 data class AddProductViewState(
-    val barcode: String? = null,
+    val canUseScanner: Boolean = false,
+    val isDuringScanning: Boolean = false,
+    val scannedBarcode: String? = null,
     val name: String = "",
     val date: LocalDate = nowDate(),
-    val scannerStatus: ScannerStatus = DISABLED
-) {
-    val scannerEnabled = scannerStatus.enabled
-}
+)
 
-enum class ScannerStatus(val enabled: Boolean = false) {
-    DISABLED,
-    DISMISSED,
-    ACTIVE(true),
-    SUCCESS
-}
-
-sealed class AddProductUiIntent{
+sealed class AddProductUiIntent {
     class BarcodeScanned(val barcodes: List<String>) : AddProductUiIntent()
     class DateChanged(val date: LocalDate) : AddProductUiIntent()
     class NameChanged(val name: String) : AddProductUiIntent()
     object ScannerClosed : AddProductUiIntent()
-    object ResetClicked : AddProductUiIntent()
     object SubmitClicked : AddProductUiIntent()
+    object Closed : AddProductUiIntent()
 }
 
 

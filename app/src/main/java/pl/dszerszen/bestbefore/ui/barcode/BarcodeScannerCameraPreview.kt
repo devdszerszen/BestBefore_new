@@ -7,39 +7,27 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.launch
-import pl.dszerszen.bestbefore.ui.theme.dimens
 import pl.dszerszen.bestbefore.util.DebugLogger
 import java.util.concurrent.Executor
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Composable
-fun BarcodeScanner(
+fun BarcodeScannerCameraPreview(
     modifier: Modifier = Modifier,
-    scannedBarcode: String? = null,
     scaleType: PreviewView.ScaleType = PreviewView.ScaleType.FILL_CENTER,
     cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA,
-    onBarcodeClosed: (() -> Unit)? = null,
     onBarcodeScanned: (List<String>) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -54,7 +42,7 @@ fun BarcodeScanner(
     }
     Box(modifier = modifier) {
         AndroidView(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             factory = { context ->
                 val previewView = PreviewView(context).apply {
                     this.scaleType = scaleType
@@ -91,37 +79,7 @@ fun BarcodeScanner(
                 previewView
             }
         )
-        AnimatedLine(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(horizontal = dimens.large),
-            barcode = scannedBarcode
-        )
-        if (onBarcodeClosed != null) {
-            IconButton(
-                onClick = onBarcodeClosed,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(dimens.small)
-            ) {
-                Icon(Icons.Outlined.Close, "close barcode scanner")
-            }
-        }
     }
-}
-
-@Composable
-fun AnimatedLine(modifier: Modifier, barcode: String?) {
-    val transition = rememberInfiniteTransition()
-    val offset by transition.animateFloat(-120f, 120f, infiniteRepeatable(tween(1600, easing = LinearEasing), RepeatMode.Reverse))
-    val color by animateColorAsState(if (barcode != null) Color.Green else Color.Red)
-
-    Divider(
-        modifier = modifier
-            .offset(y = offset.dp),
-        color = color,
-        thickness = 1.dp
-    )
 }
 
 suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspendCoroutine { cont ->

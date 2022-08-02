@@ -4,4 +4,5 @@
     <string name="no_barcode">Brak zeskanowanego kodu</string>
     <string name="reset">Resetuj</string>
     <string name="save">Zapisz</string>
+    <string name="skip_scan">Pomiń skan</string>
 </resources>
