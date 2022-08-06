@@ -51,6 +51,7 @@ class NavActivity : ComponentActivity() {
                             is InAppEvent.RequestPermission -> requestPermission(event)
                             is InAppEvent.ShowToast -> logger.log("Show toast")
                             is InAppEvent.Navigate -> navController.navigate(event.target.route)
+                            is InAppEvent.NavigateBack -> navController.popBackStack()
                         }
                     }
                 }
