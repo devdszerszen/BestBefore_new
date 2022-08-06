@@ -2,11 +2,10 @@ package pl.dszerszen.bestbefore.ui.add
 
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.every
+import io.mockk.*
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -15,8 +14,9 @@ import org.junit.jupiter.api.Test
 import pl.dszerszen.bestbefore.BaseTest
 import pl.dszerszen.bestbefore.domain.config.ConfigRepository
 import pl.dszerszen.bestbefore.domain.config.model.GlobalConfig
-import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.BarcodeScanned
-import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.ScannerClosed
+import pl.dszerszen.bestbefore.domain.product.interactor.AddProductsUseCase
+import pl.dszerszen.bestbefore.domain.product.model.Product
+import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.*
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
 import pl.dszerszen.bestbefore.ui.inapp.requestPermission
 import pl.dszerszen.bestbefore.util.Logger
@@ -34,6 +34,9 @@ internal class AddProductViewModelTest : BaseTest() {
     @RelaxedMockK
     private lateinit var configRepository: ConfigRepository
 
+    @RelaxedMockK
+    private lateinit var addProductsUseCase: AddProductsUseCase
+
     lateinit var sut: AddProductViewModel
 
     private fun setupSut(
@@ -41,9 +44,15 @@ internal class AddProductViewModelTest : BaseTest() {
         cameraPermissionEnabled: Boolean = true
     ) {
         coEvery { inAppEventDispatcher.requestPermission(any()) } returns cameraPermissionEnabled
+        coEvery { addProductsUseCase.invoke(any()) } just Runs
         every { configRepository.getConfig() } returns
                 GlobalConfig().copy(isBarcodeScannerEnabled = scannerEnabledInGlobalConfig)
-        sut = AddProductViewModel(logger, inAppEventDispatcher, configRepository)
+        sut = AddProductViewModel(
+            logger = logger,
+            inAppEventHandler = inAppEventDispatcher,
+            configRepository = configRepository,
+            addProductsUseCase = addProductsUseCase
+        )
     }
 
     @Test
@@ -131,6 +140,26 @@ internal class AddProductViewModelTest : BaseTest() {
         sut.viewState.withValue {
             isDuringScanning.shouldBeFalse()
         }
+    }
+
+    @Test
+    fun `should invoke add product use case on trying to save product`() = runTest {
+        //Arrange
+        val savedProductSlot = slot<List<Product>>()
+        setupSut()
+        //Act
+        sut.onUiIntent(NameChanged("name"))
+        sut.onUiIntent(SubmitClicked)
+        advanceUntilIdle()
+        //Assert
+        coVerify(exactly = 1) { addProductsUseCase.invoke(capture(savedProductSlot)) }
+        sut.viewState.withValue {
+            savedProductSlot.captured shouldHaveSize 1
+            val savedProduct = savedProductSlot.captured.first()
+            savedProduct.name shouldBe name
+            savedProduct.date shouldBe date
+        }
+
     }
 
     companion object {

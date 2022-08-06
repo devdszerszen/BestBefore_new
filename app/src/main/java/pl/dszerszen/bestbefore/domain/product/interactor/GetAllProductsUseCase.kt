@@ -1,6 +1,6 @@
 package pl.dszerszen.bestbefore.domain.product.interactor
 
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
 import pl.dszerszen.bestbefore.domain.product.ProductRepository
 import pl.dszerszen.bestbefore.domain.product.model.Product
 import pl.dszerszen.bestbefore.util.DispatchersProvider
@@ -11,7 +11,7 @@ class GetAllProductsUseCase @Inject constructor(
     private val dispatchersProvider: DispatchersProvider,
     private val repository: ProductRepository
 ) {
-    suspend operator fun invoke(): Response<List<Product>> = withContext(dispatchersProvider.ioDispatcher()) {
-        repository.getAllProducts()
+    suspend operator fun invoke(): Flow<Response<List<Product>>> {
+        return repository.getAllProducts()
     }
 }

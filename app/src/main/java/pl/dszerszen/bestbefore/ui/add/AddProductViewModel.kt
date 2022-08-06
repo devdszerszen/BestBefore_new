@@ -9,7 +9,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.dszerszen.bestbefore.domain.config.ConfigRepository
+import pl.dszerszen.bestbefore.domain.product.interactor.AddProductsUseCase
+import pl.dszerszen.bestbefore.domain.product.model.Product
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
+import pl.dszerszen.bestbefore.ui.inapp.navigateBack
 import pl.dszerszen.bestbefore.ui.inapp.requestPermission
 import pl.dszerszen.bestbefore.util.Logger
 import pl.dszerszen.bestbefore.util.nowDate
@@ -20,7 +23,8 @@ import javax.inject.Inject
 class AddProductViewModel @Inject constructor(
     private val logger: Logger,
     private val inAppEventHandler: InAppEventDispatcher,
-    private val configRepository: ConfigRepository
+    private val configRepository: ConfigRepository,
+    private val addProductsUseCase: AddProductsUseCase
 ) : ViewModel() {
     private val _viewState = MutableStateFlow(AddProductViewState())
     val viewState = _viewState.asStateFlow()
@@ -74,7 +78,22 @@ class AddProductViewModel @Inject constructor(
     }
 
     private fun onSubmitClicked() {
-        //TODO save item
+        //TODO perform proper validation
+        with(_viewState.value) {
+            if (name.isNotEmpty()) {
+                viewModelScope.launch {
+                    addProductsUseCase(
+                        listOf(
+                            Product(
+                                name = name,
+                                date = date
+                            )
+                        )
+                    )
+                    inAppEventHandler.navigateBack()
+                }
+            }
+        }
     }
 
     private fun resetState() {

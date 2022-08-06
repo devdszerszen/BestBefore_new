@@ -3,6 +3,7 @@ package pl.dszerszen.bestbefore.util
 import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import kotlinx.parcelize.Parcelize
@@ -22,9 +23,8 @@ sealed class StringValue : Parcelable {
             is ResString -> stringResource(id)
         }
     }
-    /**
-     * Use only for testing purposes
-     */
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun forceGet(): String {
         return when (this) {
             is ResString -> throw Exception("Cannot get ResString value")
