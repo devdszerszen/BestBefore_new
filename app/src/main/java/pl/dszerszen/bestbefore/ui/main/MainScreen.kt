@@ -11,8 +11,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material.icons.twotone.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -54,7 +54,7 @@ private fun ProductsList(
 ) {
     Scaffold(modifier = modifier, floatingActionButton = {
         FloatingActionButton(onClick = { onIntent(OnAddProductClicked) }) {
-            Icon(Icons.Rounded.AddCircle, "add")
+            Icon(Icons.Default.Add, "add")
         }
     }) { padding ->
         if (products.isEmpty()) {
