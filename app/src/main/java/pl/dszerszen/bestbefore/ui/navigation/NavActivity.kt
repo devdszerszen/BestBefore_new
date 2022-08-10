@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
@@ -15,13 +14,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import pl.dszerszen.bestbefore.ui.add.AddProductScreen
-import pl.dszerszen.bestbefore.ui.add.AddProductViewModel
 import pl.dszerszen.bestbefore.ui.inapp.InAppEvent
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventHandler
 import pl.dszerszen.bestbefore.ui.main.MainScreen
-import pl.dszerszen.bestbefore.ui.main.MainViewModel
 import pl.dszerszen.bestbefore.ui.settings.SettingsScreen
-import pl.dszerszen.bestbefore.ui.settings.SettingsViewModel
 import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
 import pl.dszerszen.bestbefore.util.Logger
 import javax.inject.Inject
@@ -46,7 +42,6 @@ class NavActivity : ComponentActivity() {
             BestBeforeTheme {
                 LaunchedEffect(Unit) {
                     inAppEventHandler.handleEvent {
-                        logger.log("ACTIVITY: received event: $it")
                         when (val event = it) {
                             is InAppEvent.RequestPermission -> requestPermission(event)
                             is InAppEvent.ShowToast -> logger.log("Show toast")
@@ -57,13 +52,13 @@ class NavActivity : ComponentActivity() {
                 }
                 NavHost(navController = navController, startDestination = NavScreen.Main.route) {
                     composable(route = NavScreen.Main.route) {
-                        MainScreen(viewModels<MainViewModel>().value)
+                        MainScreen()
                     }
                     composable(route = NavScreen.Settings.route) {
-                        SettingsScreen(viewModels<SettingsViewModel>().value)
+                        SettingsScreen()
                     }
                     composable(route = NavScreen.AddProduct.route) {
-                        AddProductScreen(viewModels<AddProductViewModel>().value)
+                        AddProductScreen()
                     }
                 }
             }

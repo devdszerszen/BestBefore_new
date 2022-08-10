@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import pl.dszerszen.bestbefore.R
 import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.*
 import pl.dszerszen.bestbefore.ui.barcode.BarcodeScannerCameraPreview
@@ -29,7 +30,7 @@ import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
 import pl.dszerszen.bestbefore.ui.theme.dimens
 
 @Composable
-fun AddProductScreen(viewModel: AddProductViewModel) {
+fun AddProductScreen(viewModel: AddProductViewModel = hiltViewModel()) {
     //TODO reset status when enter composition
     val state by viewModel.viewState.collectAsState()
     if (state.isDuringScanning) {

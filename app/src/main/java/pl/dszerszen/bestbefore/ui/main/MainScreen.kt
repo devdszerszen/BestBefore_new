@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import pl.dszerszen.bestbefore.domain.product.model.Product
 import pl.dszerszen.bestbefore.ui.common.FullScreenLoader
 import pl.dszerszen.bestbefore.ui.main.MainScreenUiIntent.OnAddProductClicked
@@ -32,7 +33,7 @@ import pl.dszerszen.bestbefore.ui.theme.dimens
 import java.time.LocalDate
 
 @Composable
-fun MainScreen(viewModel: MainViewModel) {
+fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
     val state by viewModel.viewState.collectAsState()
     if (state.loaderEnabled) {
         FullScreenLoader()
@@ -116,15 +117,16 @@ private fun ProductsList(
                         },
                         dismissThresholds = { FractionalThreshold(0.2f) }
                     ) {
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .background(colors.primary)
-                                .padding(dimens.medium)
-                        ) {
-                            Text(item.name)
-                            Spacer(Modifier.weight(1f))
-                            Text(item.quantity.toString())
+                        Surface(color = colors.primary) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(dimens.medium)
+                            ) {
+                                Text(item.name)
+                                Spacer(Modifier.weight(1f))
+                                Text(item.quantity.toString())
+                            }
                         }
                     }
                 }
