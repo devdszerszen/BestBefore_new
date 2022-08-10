@@ -5,21 +5,22 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.twotone.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
+import pl.dszerszen.bestbefore.R
 import pl.dszerszen.bestbefore.domain.product.model.Product
 import pl.dszerszen.bestbefore.ui.common.FullScreenLoader
 import pl.dszerszen.bestbefore.ui.main.MainScreenUiIntent.OnAddProductClicked
@@ -47,11 +48,17 @@ private fun ProductsList(
     modifier: Modifier = Modifier,
     onIntent: (MainScreenUiIntent) -> Unit,
 ) {
-    Scaffold(modifier = modifier, floatingActionButton = {
-        FloatingActionButton(onClick = { onIntent(OnAddProductClicked) }) {
-            Icon(Icons.Default.Add, "add")
-        }
-    }) { padding ->
+    val scaffoldState = rememberScaffoldState()
+    val coroutineScope = rememberCoroutineScope()
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+        modifier = modifier,
+        floatingActionButton = {
+            FloatingActionButton(onClick = { onIntent(OnAddProductClicked) }) {
+                Icon(Icons.Default.Add, "add")
+            }
+        }) { padding ->
         if (products.isEmpty()) {
             Box(Modifier.fillMaxSize()) {
                 Column(
@@ -68,6 +75,9 @@ private fun ProductsList(
                 }
             }
         } else {
+            val snackbarMessage = stringResource(R.string.item_removed)
+            val snackbarActionLabel = stringResource(R.string.restore)
+
             LazyColumn(
                 modifier = Modifier.padding(padding),
                 verticalArrangement = Arrangement.spacedBy(dimens.small),
@@ -76,7 +86,18 @@ private fun ProductsList(
                 items(products, key = { it.id }) { product ->
                     DismissableProductListItem(
                         product = product,
-                        onDismiss = { onIntent(MainScreenUiIntent.OnProductSwiped(it)) }
+                        onDismiss = { removedProduct ->
+                            onIntent(MainScreenUiIntent.OnProductSwiped(removedProduct))
+                            coroutineScope.launch {
+                                val result = scaffoldState.snackbarHostState.showSnackbar(
+                                    message = snackbarMessage,
+                                    actionLabel = snackbarActionLabel
+                                )
+                                if (result == SnackbarResult.ActionPerformed) {
+                                    onIntent(MainScreenUiIntent.OnRestoreRequested(removedProduct))
+                                }
+                            }
+                        }
                     )
                 }
             }

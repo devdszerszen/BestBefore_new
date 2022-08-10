@@ -1,7 +1,9 @@
 package pl.dszerszen.bestbefore.ui.start
 
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -13,11 +15,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import pl.dszerszen.bestbefore.BaseTest
 import pl.dszerszen.bestbefore.TestCoroutineExtension
+import pl.dszerszen.bestbefore.domain.product.interactor.AddProductsUseCase
 import pl.dszerszen.bestbefore.domain.product.interactor.DeleteProductUseCase
 import pl.dszerszen.bestbefore.domain.product.interactor.GetAllProductsUseCase
 import pl.dszerszen.bestbefore.domain.product.model.Product
 import pl.dszerszen.bestbefore.ui.inapp.InAppEvent
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
+import pl.dszerszen.bestbefore.ui.main.MainScreenUiIntent
 import pl.dszerszen.bestbefore.ui.main.MainViewModel
 import pl.dszerszen.bestbefore.util.Logger
 import pl.dszerszen.bestbefore.util.asError
@@ -42,6 +46,9 @@ internal class MainViewModelTest : BaseTest() {
     @RelaxedMockK
     private lateinit var deleteProductUseCase: DeleteProductUseCase
 
+    @RelaxedMockK
+    private lateinit var addProductsUseCase: AddProductsUseCase
+
 
     val eventSlot = slot<InAppEvent>()
 
@@ -54,6 +61,7 @@ internal class MainViewModelTest : BaseTest() {
             logger = logger,
             getAllProductsUseCase = getAllProductsUseCase,
             deleteProductUseCase = deleteProductUseCase,
+            addProductsUseCase = addProductsUseCase,
             inAppEventDispatcher = inAppEventDispatcher
         )
     }
@@ -94,5 +102,21 @@ internal class MainViewModelTest : BaseTest() {
             assertEquals(false, loaderEnabled)
             assertEquals("message", errorMessage?.forceGet())
         }
+    }
+
+    @Test
+    fun `should invoke delete product use case when product swiped to delete`() = runTest {
+        val sampleProduct: Product = mockk(relaxed = true)
+        sut.onUiIntent(MainScreenUiIntent.OnProductSwiped(sampleProduct))
+        advanceUntilIdle()
+        coVerify { deleteProductUseCase.invoke(sampleProduct) }
+    }
+
+    @Test
+    fun `should invoke add product use case when product requested to restore`() = runTest {
+        val sampleProduct: Product = mockk(relaxed = true)
+        sut.onUiIntent(MainScreenUiIntent.OnRestoreRequested(sampleProduct))
+        advanceUntilIdle()
+        coVerify { addProductsUseCase.invoke(listOf(sampleProduct)) }
     }
 }

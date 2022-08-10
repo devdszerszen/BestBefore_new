@@ -5,4 +5,6 @@
     <string name="reset">Reset</string>
     <string name="save">Save</string>
     <string name="skip_scan">Skip scan</string>
+    <string name="item_removed">Item removed</string>
+    <string name="restore">Restore</string>
 </resources>

@@ -6,9 +6,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +32,10 @@ fun DismissableProductListItem(
     ) {
     val dismissState = rememberDismissState()
     if (dismissState.isDismissed(DismissDirection.EndToStart)) {
-        onDismiss(product)
+        LaunchedEffect(dismissState) {
+            onDismiss(product)
+            dismissState.snapTo(DismissValue.Default)
+        }
     }
 
     SwipeToDismiss(
@@ -40,34 +45,32 @@ fun DismissableProductListItem(
         background = {
             val color by animateColorAsState(
                 when (dismissState.targetValue) {
-                    DismissValue.Default -> Color.White
+                    DismissValue.Default -> colors.background
                     else -> Color.Red
                 }
             )
-            val alignment = Alignment.CenterEnd
-            val icon = Icons.Default.Delete
-
             val scale by animateFloatAsState(
                 if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
             )
 
             Box(
                 Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .background(color)
                     .padding(horizontal = dimens.medium),
-                contentAlignment = alignment
+                contentAlignment = Alignment.CenterEnd
             ) {
                 Icon(
-                    icon,
-                    contentDescription = "Delete Icon",
-                    modifier = Modifier.scale(scale)
+                    Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    modifier = Modifier.scale(scale),
+                    tint = colors.onBackground
                 )
             }
         },
         dismissThresholds = { FractionalThreshold(0.2f) }
     ) {
-        Surface(color = MaterialTheme.colors.primary) {
+        Surface(color = colors.primary) {
             Row(
                 Modifier
                     .fillMaxWidth()

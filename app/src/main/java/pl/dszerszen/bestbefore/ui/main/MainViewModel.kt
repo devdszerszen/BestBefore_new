@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pl.dszerszen.bestbefore.domain.product.interactor.AddProductsUseCase
 import pl.dszerszen.bestbefore.domain.product.interactor.DeleteProductUseCase
 import pl.dszerszen.bestbefore.domain.product.interactor.GetAllProductsUseCase
 import pl.dszerszen.bestbefore.domain.product.model.Product
@@ -23,6 +24,7 @@ class MainViewModel @Inject constructor(
     private val logger: Logger,
     private val getAllProductsUseCase: GetAllProductsUseCase,
     private val deleteProductUseCase: DeleteProductUseCase,
+    private val addProductsUseCase: AddProductsUseCase,
     private val inAppEventDispatcher: InAppEventDispatcher,
 ) : ViewModel() {
 
@@ -52,11 +54,16 @@ class MainViewModel @Inject constructor(
         when (intent) {
             MainScreenUiIntent.OnAddProductClicked -> onAddProductClick()
             is MainScreenUiIntent.OnProductSwiped -> onDelete(intent.product)
+            is MainScreenUiIntent.OnRestoreRequested -> onRestore(intent.product)
         }
     }
 
     private fun onDelete(product: Product) {
         viewModelScope.launch { deleteProductUseCase(product) }
+    }
+
+    private fun onRestore(product: Product) {
+        viewModelScope.launch { addProductsUseCase(listOf(product)) }
     }
 
     private fun onAddProductClick() {
@@ -73,5 +80,6 @@ data class StartViewState(
 sealed class MainScreenUiIntent {
     object OnAddProductClicked : MainScreenUiIntent()
     class OnProductSwiped(val product: Product) : MainScreenUiIntent()
+    class OnRestoreRequested(val product: Product) : MainScreenUiIntent()
 
 }

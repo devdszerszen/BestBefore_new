@@ -5,4 +5,6 @@
     <string name="reset">Resetuj</string>
     <string name="save">Zapisz</string>
     <string name="skip_scan">Pomiń skan</string>
+    <string name="item_removed">Element usunięty</string>
+    <string name="restore">Przywróć</string>
 </resources>
