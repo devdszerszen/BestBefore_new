@@ -38,11 +38,6 @@ fun AddProductScreen(viewModel: AddProductViewModel = hiltViewModel()) {
     } else {
         AddProductScreen(state, viewModel::onUiIntent)
     }
-    DisposableEffect(Unit) {
-        onDispose {
-            viewModel.onUiIntent(Closed)
-        }
-    }
 }
 
 @Composable

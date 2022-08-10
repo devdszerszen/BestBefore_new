@@ -50,7 +50,6 @@ class AddProductViewModel @Inject constructor(
             is AddProductUiIntent.NameChanged -> onNameChanged(intent.name)
             AddProductUiIntent.ScannerClosed -> onBarcodeScannerClosed()
             AddProductUiIntent.SubmitClicked -> onSubmitClicked()
-            AddProductUiIntent.Closed -> resetState()
         }
     }
 
@@ -95,15 +94,6 @@ class AddProductViewModel @Inject constructor(
             }
         }
     }
-
-    private fun resetState() {
-        _viewState.update { oldState ->
-            AddProductViewState(
-                canUseScanner = oldState.canUseScanner,
-                isDuringScanning = oldState.canUseScanner
-            )
-        }
-    }
 }
 
 data class AddProductViewState(
@@ -120,7 +110,6 @@ sealed class AddProductUiIntent {
     class NameChanged(val name: String) : AddProductUiIntent()
     object ScannerClosed : AddProductUiIntent()
     object SubmitClicked : AddProductUiIntent()
-    object Closed : AddProductUiIntent()
 }
 
 
