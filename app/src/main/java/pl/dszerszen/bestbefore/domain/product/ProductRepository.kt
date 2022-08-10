@@ -7,5 +7,5 @@ import pl.dszerszen.bestbefore.util.Response
 interface ProductRepository {
     suspend fun deleteProduct(product: Product)
     suspend fun addProducts(products: List<Product>)
-    suspend fun getAllProducts(): Flow<Response<List<Product>>>
+    fun getAllProducts(): Flow<Response<List<Product>>>
 }

@@ -23,7 +23,7 @@ class ProductRepositoryImpl @Inject constructor(
         db.dao.addProducts(products.map { it.toEntity() })
     }
 
-    override suspend fun getAllProducts(): Flow<Response<List<Product>>> {
+    override fun getAllProducts(): Flow<Response<List<Product>>> {
         return db.dao.getAllProducts().map { it.map { product -> product.toDomain() }.asSuccess() }
     }
 
