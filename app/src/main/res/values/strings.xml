@@ -7,4 +7,5 @@
     <string name="skip_scan">Skip scan</string>
     <string name="item_removed">Item removed</string>
     <string name="restore">Restore</string>
+    <string name="error_empty_input">Enter product name</string>
 </resources>

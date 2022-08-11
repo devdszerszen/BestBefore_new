@@ -1,6 +1,7 @@
 package pl.dszerszen.bestbefore.ui.add
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -25,6 +27,7 @@ import pl.dszerszen.bestbefore.R
 import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.*
 import pl.dszerszen.bestbefore.ui.barcode.BarcodeScannerCameraPreview
 import pl.dszerszen.bestbefore.ui.common.DatePicker
+import pl.dszerszen.bestbefore.ui.common.FullScreenLoader
 import pl.dszerszen.bestbefore.ui.scanner.ScannerPreviewLayer
 import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
 import pl.dszerszen.bestbefore.ui.theme.dimens
@@ -33,10 +36,16 @@ import pl.dszerszen.bestbefore.ui.theme.dimens
 fun AddProductScreen(viewModel: AddProductViewModel = hiltViewModel()) {
     //TODO reset status when enter composition
     val state by viewModel.viewState.collectAsState()
-    if (state.isDuringScanning) {
-        ScannerScreen(viewModel::onUiIntent)
-    } else {
-        AddProductScreen(state, viewModel::onUiIntent)
+    when {
+        state.isInitialized.not() -> {
+            FullScreenLoader()
+        }
+        state.isDuringScanning -> {
+            ScannerScreen(viewModel::onUiIntent)
+        }
+        else -> {
+            AddProductScreen(state, viewModel::onUiIntent)
+        }
     }
 }
 
@@ -82,6 +91,7 @@ private fun AddProductScreen(
             },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val inputError = state.nameInputError?.get()
         if (state.canUseScanner) {
             Text(text = state.scannedBarcode ?: stringResource(R.string.no_barcode))
             Spacer(Modifier.height(dimens.large))
@@ -90,11 +100,15 @@ private fun AddProductScreen(
         OutlinedTextField(
             modifier = Modifier.focusRequester(focusRequester),
             value = state.name,
+            isError = !inputError.isNullOrEmpty(),
             label = { Text("Product name") },
             onValueChange = { onUiIntent(NameChanged(it)) },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() })
         )
+        AnimatedVisibility(!inputError.isNullOrEmpty()) {
+            Text(text = inputError.orEmpty(), color = colors.error)
+        }
         Spacer(Modifier.height(dimens.large))
         DatePicker { onUiIntent(DateChanged(it)) }
         Spacer(Modifier.weight(1f))

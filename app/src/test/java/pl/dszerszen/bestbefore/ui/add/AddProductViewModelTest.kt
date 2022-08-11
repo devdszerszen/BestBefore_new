@@ -4,6 +4,7 @@ import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.nulls.shouldNotBeNull
 import io.kotest.matchers.shouldBe
 import io.mockk.*
 import io.mockk.impl.annotations.RelaxedMockK
@@ -159,7 +160,20 @@ internal class AddProductViewModelTest : BaseTest() {
             savedProduct.name shouldBe name
             savedProduct.date shouldBe date
         }
+    }
 
+    @Test
+    fun `should update state with validation message when empty input and clicked save`() = runTest {
+        //Arrange
+        setupSut()
+        //Act
+        sut.onUiIntent(SubmitClicked)
+        advanceUntilIdle()
+        //Assert
+        coVerify(exactly = 0) { addProductsUseCase.invoke(any()) }
+        sut.viewState.withValue {
+            nameInputError.shouldNotBeNull()
+        }
     }
 
     companion object {

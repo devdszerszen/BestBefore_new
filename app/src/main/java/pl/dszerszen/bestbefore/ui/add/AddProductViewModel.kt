@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import pl.dszerszen.bestbefore.R
 import pl.dszerszen.bestbefore.domain.config.ConfigRepository
 import pl.dszerszen.bestbefore.domain.product.interactor.AddProductsUseCase
 import pl.dszerszen.bestbefore.domain.product.model.Product
@@ -15,6 +16,8 @@ import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
 import pl.dszerszen.bestbefore.ui.inapp.navigateBack
 import pl.dszerszen.bestbefore.ui.inapp.requestPermission
 import pl.dszerszen.bestbefore.util.Logger
+import pl.dszerszen.bestbefore.util.ResString
+import pl.dszerszen.bestbefore.util.StringValue
 import pl.dszerszen.bestbefore.util.nowDate
 import java.time.LocalDate
 import javax.inject.Inject
@@ -35,6 +38,7 @@ class AddProductViewModel @Inject constructor(
                 val hasPermission = inAppEventHandler.requestPermission(Manifest.permission.CAMERA)
                 _viewState.update {
                     it.copy(
+                        isInitialized = true,
                         canUseScanner = hasPermission,
                         isDuringScanning = hasPermission
                     )
@@ -69,7 +73,7 @@ class AddProductViewModel @Inject constructor(
     }
 
     private fun onNameChanged(name: String) {
-        _viewState.update { it.copy(name = name) }
+        _viewState.update { it.copy(name = name, nameInputError = null) }
     }
 
     private fun onDateSelected(date: LocalDate) {
@@ -91,16 +95,20 @@ class AddProductViewModel @Inject constructor(
                     )
                     inAppEventHandler.navigateBack()
                 }
+            } else {
+                _viewState.update { it.copy(nameInputError = ResString(R.string.error_empty_input)) }
             }
         }
     }
 }
 
 data class AddProductViewState(
+    val isInitialized: Boolean = false,
     val canUseScanner: Boolean = false,
     val isDuringScanning: Boolean = false,
     val scannedBarcode: String? = null,
     val name: String = "",
+    val nameInputError: StringValue? = null,
     val date: LocalDate = nowDate(),
 )
 

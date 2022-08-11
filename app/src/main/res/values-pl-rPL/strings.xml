@@ -7,4 +7,5 @@
     <string name="skip_scan">Pomiń skan</string>
     <string name="item_removed">Element usunięty</string>
     <string name="restore">Przywróć</string>
+    <string name="error_empty_input">Wpisz nazwę produktu</string>
 </resources>
