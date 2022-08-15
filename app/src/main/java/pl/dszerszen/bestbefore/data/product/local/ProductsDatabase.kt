@@ -4,10 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [ProductEntity::class],
+    entities = [ProductEntity::class, CategoryEntity::class],
     version = 1
 )
 abstract class ProductsDatabase : RoomDatabase() {
 
-    abstract val dao: ProductsDao
+    abstract val productsDao: ProductsDao
+    abstract val categoriesDao: CategoryDao
 }

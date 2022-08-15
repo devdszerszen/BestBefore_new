@@ -12,9 +12,9 @@ interface ProductsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addProducts(product: List<ProductEntity>)
 
-    @Query("SELECT * FROM productentity")
+    @Query("SELECT * FROM products")
     fun getAllProducts(): Flow<List<ProductEntity>>
 
-    @Query("DELETE FROM productentity WHERE id = :id")
+    @Query("DELETE FROM products WHERE id = :id")
     suspend fun deleteProduct(id: String)
 }

@@ -3,7 +3,7 @@ package pl.dszerszen.bestbefore.data.product.local
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "products")
 data class ProductEntity(
     val name: String,
     val desc: String?,

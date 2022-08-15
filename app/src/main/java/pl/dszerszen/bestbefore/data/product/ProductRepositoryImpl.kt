@@ -6,6 +6,7 @@ import pl.dszerszen.bestbefore.data.product.local.ProductsDatabase
 import pl.dszerszen.bestbefore.domain.product.ProductRepository
 import pl.dszerszen.bestbefore.domain.product.mapper.toDomain
 import pl.dszerszen.bestbefore.domain.product.mapper.toEntity
+import pl.dszerszen.bestbefore.domain.product.model.Category
 import pl.dszerszen.bestbefore.domain.product.model.Product
 import pl.dszerszen.bestbefore.util.Response
 import pl.dszerszen.bestbefore.util.asSuccess
@@ -16,15 +17,27 @@ class ProductRepositoryImpl @Inject constructor(
 ) : ProductRepository {
 
     override suspend fun deleteProduct(product: Product) {
-        db.dao.deleteProduct(product.id)
+        db.productsDao.deleteProduct(product.id)
     }
 
     override suspend fun addProducts(products: List<Product>) {
-        db.dao.addProducts(products.map { it.toEntity() })
+        db.productsDao.addProducts(products.map { it.toEntity() })
     }
 
     override fun getAllProducts(): Flow<Response<List<Product>>> {
-        return db.dao.getAllProducts().map { it.map { product -> product.toDomain() }.asSuccess() }
+        return db.productsDao.getAllProducts().map { it.map { product -> product.toDomain() }.asSuccess() }
+    }
+
+    override fun getCategories(): Flow<Response<List<Category>>> {
+        return db.categoriesDao.getCategories().map { it.map { category -> category.toDomain() }.asSuccess() }
+    }
+
+    override suspend fun addCategory(category: Category) {
+        db.categoriesDao.addCategory(category.toEntity())
+    }
+
+    override suspend fun deleteCategory(category: Category) {
+        db.categoriesDao.deleteCategory(category.toEntity())
     }
 
 }
