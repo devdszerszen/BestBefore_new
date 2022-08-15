@@ -11,3 +11,9 @@ sealed class Response<T>(open val data: T?, open val errorMessage: StringValue? 
 
 fun <T> T.asSuccess(): Response.Success<T> = Response.Success(this)
 fun <T> T.asError(message: StringValue): Response.Error<T> = Response.Error(message)
+
+fun <T> Response<T>.runWhenSuccess(action: (T) -> Unit) {
+    (this as? Response.Success)?.let {
+        action(it.data)
+    }
+}
