@@ -14,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import pl.dszerszen.bestbefore.ui.add.AddProductScreen
+import pl.dszerszen.bestbefore.ui.categories.CategoriesScreen
 import pl.dszerszen.bestbefore.ui.inapp.InAppEvent
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventHandler
 import pl.dszerszen.bestbefore.ui.main.MainScreen
@@ -59,6 +60,9 @@ class NavActivity : ComponentActivity() {
                     }
                     composable(route = NavScreen.AddProduct.route) {
                         AddProductScreen()
+                    }
+                    composable(route = NavScreen.Categories.route) {
+                        CategoriesScreen()
                     }
                 }
             }
