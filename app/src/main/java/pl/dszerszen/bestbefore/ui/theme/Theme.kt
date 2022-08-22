@@ -48,7 +48,11 @@ private val DarkColorPalette = darkColors(
 )
 
 @Composable
-fun BestBeforeTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+fun BestBeforeTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    previewMode: Boolean = false,
+    content: @Composable () -> Unit
+) {
     val colors = if (darkTheme) {
         DarkColorPalette
     } else {
@@ -61,7 +65,12 @@ fun BestBeforeTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compos
             colors = colors,
             typography = Typography,
             shapes = Shapes,
-            content = { Surface(modifier = Modifier.fillMaxSize(), content = content) }
+            content = {
+                Surface(
+                    modifier = Modifier.run { if (previewMode.not()) fillMaxSize() else this },
+                    content = content
+                )
+            }
         )
     }
 }
