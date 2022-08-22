@@ -8,4 +8,9 @@
     <string name="item_removed">Item removed</string>
     <string name="restore">Restore</string>
     <string name="error_empty_input">Enter product name</string>
+
+    <!-- Settings -->
+    <string name="categories_settings_header">Categories settings</string>
+    <string name="categories_manage_label">Manage categories</string>
+    <string name="categories_toggle_label">Categories enabled</string>
 </resources>

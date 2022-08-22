@@ -8,4 +8,9 @@
     <string name="item_removed">Element usunięty</string>
     <string name="restore">Przywróć</string>
     <string name="error_empty_input">Wpisz nazwę produktu</string>
+
+    <!-- Settings -->
+    <string name="categories_settings_header">Ustawienia kategorii</string>
+    <string name="categories_manage_label">Zarządzaj kategoriami</string>
+    <string name="categories_toggle_label">Funkcja kategorii włączona</string>
 </resources>
