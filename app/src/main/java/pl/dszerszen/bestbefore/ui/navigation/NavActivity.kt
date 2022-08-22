@@ -1,6 +1,7 @@
 package pl.dszerszen.bestbefore.ui.navigation
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -45,7 +46,7 @@ class NavActivity : ComponentActivity() {
                     inAppEventHandler.handleEvent {
                         when (val event = it) {
                             is InAppEvent.RequestPermission -> requestPermission(event)
-                            is InAppEvent.ShowToast -> logger.log("Show toast")
+                            is InAppEvent.ShowToast -> Toast.makeText(this@NavActivity, event.message, Toast.LENGTH_LONG).show()
                             is InAppEvent.Navigate -> navController.navigate(event.target.route)
                             is InAppEvent.NavigateBack -> navController.popBackStack()
                         }

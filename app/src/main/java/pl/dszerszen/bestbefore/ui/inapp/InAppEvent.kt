@@ -21,6 +21,7 @@ interface InAppEventHandler {
 
 fun InAppEventDispatcher.navigate(target: NavScreen) = dispatchEvent(InAppEvent.Navigate(target))
 fun InAppEventDispatcher.navigateBack() = dispatchEvent(InAppEvent.NavigateBack)
+fun InAppEventDispatcher.showToast(message: String) = dispatchEvent(InAppEvent.ShowToast(message))
 
 suspend fun InAppEventDispatcher.requestPermission(permissionName: String): Boolean =
     suspendCoroutine { continuation ->
