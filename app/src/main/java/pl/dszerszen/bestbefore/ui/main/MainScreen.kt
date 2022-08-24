@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import pl.dszerszen.bestbefore.R
@@ -67,7 +66,7 @@ private fun ProductsList(
                 ) {
                     Icon(
                         modifier = Modifier
-                            .size(128.dp),
+                            .size(dimens.iconSize),
                         imageVector = Icons.TwoTone.ShoppingCart,
                         contentDescription = ""
                     )

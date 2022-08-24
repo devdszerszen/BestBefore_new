@@ -6,8 +6,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
+import pl.dszerszen.bestbefore.ui.inapp.InAppMessage
 import pl.dszerszen.bestbefore.ui.inapp.navigate
-import pl.dszerszen.bestbefore.ui.inapp.showToast
+import pl.dszerszen.bestbefore.ui.inapp.showMessage
 import pl.dszerszen.bestbefore.ui.navigation.NavScreen
 import pl.dszerszen.bestbefore.util.Logger
 import javax.inject.Inject
@@ -26,7 +27,7 @@ class SettingsViewModel @Inject constructor(
             is SettingsScreenUiIntent.OnCategoriesToggleClicked -> {
                 _viewState.update { it.copy(categoriesEnabled = intent.checked) }
                 //TODO implement categories toggle
-                inAppEventDispatcher.showToast("Not implemented yet")
+                inAppEventDispatcher.showMessage(InAppMessage.Toast("Not implemented yet"))
             }
         }
     }

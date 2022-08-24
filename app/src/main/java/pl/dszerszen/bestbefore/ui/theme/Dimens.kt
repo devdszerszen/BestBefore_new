@@ -11,6 +11,7 @@ data class Dimens(
     val small: Dp = 4.dp,
     val medium: Dp = 8.dp,
     val large: Dp = 16.dp,
+    val iconSize: Dp = 128.dp,
 )
 
 val LocalDimens = compositionLocalOf { Dimens() }
