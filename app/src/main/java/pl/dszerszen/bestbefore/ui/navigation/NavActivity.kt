@@ -8,16 +8,15 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.channels.Channel
@@ -53,7 +52,9 @@ class NavActivity : ComponentActivity() {
         setContent {
             val coroutineScope = rememberCoroutineScope()
             val navController = rememberNavController()
+            val currentScreen by navController.currentBackStackEntryAsState()
             val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+            val scaffoldState = rememberScaffoldState()
             var bottomSheetMessageState by remember { mutableStateOf<InAppMessage.BottomSheet?>(null) }
 
             BestBeforeTheme {
@@ -96,18 +97,31 @@ class NavActivity : ComponentActivity() {
                         }
                     }
                 ) {
-                    NavHost(navController = navController, startDestination = NavScreen.Main.route) {
-                        composable(route = NavScreen.Main.route) {
-                            MainScreen()
+                    Scaffold(
+                        scaffoldState = scaffoldState,
+                        bottomBar = {
+                            if (currentScreen?.toNavScreen()?.bottomNavConfig != null) {
+                                BottomBar(navController)
+                            }
                         }
-                        composable(route = NavScreen.Settings.route) {
-                            SettingsScreen()
-                        }
-                        composable(route = NavScreen.AddProduct.route) {
-                            AddProductScreen()
-                        }
-                        composable(route = NavScreen.Categories.route) {
-                            CategoriesScreen()
+                    ) { paddingValues ->
+                        NavHost(
+                            modifier = Modifier.padding(paddingValues),
+                            navController = navController,
+                            startDestination = NavScreen.Main.route
+                        ) {
+                            composable(route = NavScreen.Main.route) {
+                                MainScreen()
+                            }
+                            composable(route = NavScreen.Settings.route) {
+                                SettingsScreen()
+                            }
+                            composable(route = NavScreen.AddProduct.route) {
+                                AddProductScreen()
+                            }
+                            composable(route = NavScreen.Categories.route) {
+                                CategoriesScreen()
+                            }
                         }
                     }
                 }
