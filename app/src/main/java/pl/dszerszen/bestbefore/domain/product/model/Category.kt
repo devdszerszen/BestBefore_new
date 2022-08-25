@@ -7,7 +7,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 data class Category(
     val id: String,
     val name: String,
-    val icon: CategoryIcon? = null
+    val icon: CategoryIcon? = null,
+    val selected: Boolean = false,
 )
 
 enum class CategoryIcon(val icon: ImageVector) {

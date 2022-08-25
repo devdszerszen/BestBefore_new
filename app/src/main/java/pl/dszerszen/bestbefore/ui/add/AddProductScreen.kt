@@ -24,8 +24,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import pl.dszerszen.bestbefore.R
+import pl.dszerszen.bestbefore.domain.product.model.Category
 import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.*
 import pl.dszerszen.bestbefore.ui.barcode.BarcodeScannerCameraPreview
+import pl.dszerszen.bestbefore.ui.categories.CategoriesRow
 import pl.dszerszen.bestbefore.ui.common.DatePicker
 import pl.dszerszen.bestbefore.ui.common.FullScreenLoader
 import pl.dszerszen.bestbefore.ui.scanner.ScannerPreviewLayer
@@ -73,6 +75,7 @@ private fun AddProductScreen(
     state: AddProductViewState,
     onUiIntent: (AddProductUiIntent) -> Unit
 ) {
+    val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
@@ -82,7 +85,7 @@ private fun AddProductScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scrollState)
             .padding(dimens.large)
             .pointerInput(Unit) {
                 detectTapGestures {
@@ -110,7 +113,21 @@ private fun AddProductScreen(
             Text(text = inputError.orEmpty(), color = colors.error)
         }
         Spacer(Modifier.height(dimens.large))
-        DatePicker { onUiIntent(DateChanged(it)) }
+        DatePicker {
+            focusManager.clearFocus()
+            onUiIntent(DateChanged(it))
+        }
+        Spacer(Modifier.height(dimens.large))
+        CategoriesRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = dimens.medium),
+            categories = state.categories,
+            onClick = { category, checked ->
+                focusManager.clearFocus()
+                onUiIntent(CategoryClicked(category, checked))
+            }
+        )
         Spacer(Modifier.weight(1f))
         Button(onClick = { onUiIntent(SubmitClicked) }) {
             Text(stringResource(R.string.save))
@@ -132,6 +149,15 @@ fun ScannerScreenPreview() {
 @Composable
 fun AddProductScreenPreview() {
     BestBeforeTheme {
-        AddProductScreen(state = AddProductViewState(), onUiIntent = {})
+        val state = AddProductViewState(
+            categories = List(5) {
+                Category(
+                    "id",
+                    "name ${it + 1}",
+                    selected = it == 2
+                )
+            }
+        )
+        AddProductScreen(state = state, onUiIntent = {})
     }
 }

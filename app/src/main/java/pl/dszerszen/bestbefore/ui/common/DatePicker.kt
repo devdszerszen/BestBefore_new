@@ -2,7 +2,6 @@ package pl.dszerszen.bestbefore.ui.common
 
 import android.view.LayoutInflater
 import android.widget.DatePicker
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
@@ -11,10 +10,11 @@ import java.time.LocalDate
 
 @Composable
 fun DatePicker(
+    modifier: Modifier = Modifier,
     onDateSelected: (LocalDate) -> Unit
 ) {
     AndroidView(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         factory = { context ->
             val view = LayoutInflater.from(context).inflate(R.layout.date_picker, null)
             val datePicker = view.findViewById<DatePicker>(R.id.datePicker)
