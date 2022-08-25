@@ -63,7 +63,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
     implementation "androidx.activity:activity-compose:$compose_activity_version"
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation "androidx.navigation:navigation-compose:$nav_version"
     //Debug
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
@@ -91,4 +91,6 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
+    //Accompanist
+    implementation "com.google.accompanist:accompanist-flowlayout:$accompanist_version"
 }
