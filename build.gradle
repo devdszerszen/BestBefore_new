@@ -1,7 +1,7 @@
 buildscript {
     ext {
         ktx_version = '1.8.0'
-        compose_version = '1.2.1'
+        compose_version = '1.2.0'
         compose_activity_version = '1.5.1'
         lifecycle_version = '2.5.1'
         junit_version = '5.8.2'
@@ -13,7 +13,7 @@ buildscript {
         hilt_version = '2.43.2'
         nav_version = '2.5.1'
         room_version = '2.4.3'
-        accompanist_version = '0.26.1-alpha'
+        accompanist_version = '0.25.1'
     }
     dependencies {
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
