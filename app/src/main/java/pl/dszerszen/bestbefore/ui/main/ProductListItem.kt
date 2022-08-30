@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import pl.dszerszen.bestbefore.domain.product.model.Product
 import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
 import pl.dszerszen.bestbefore.ui.theme.dimens
+import pl.dszerszen.bestbefore.util.formatFullDate
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -72,11 +73,15 @@ fun DismissableProductListItem(
     ) {
         Surface(color = colors.primary) {
             Row(
-                Modifier
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimens.medium)
+                    .padding(dimens.medium),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(product.name)
+                Column {
+                    Text(product.name)
+                    Text(product.date.formatFullDate())
+                }
                 Spacer(Modifier.weight(1f))
                 Text(product.quantity.toString())
             }
@@ -88,7 +93,7 @@ fun DismissableProductListItem(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun ProductListItemPreview() {
-    BestBeforeTheme {
+    BestBeforeTheme(previewMode = true) {
         DismissableProductListItem(
             product = Product(
                 name = "Name",
