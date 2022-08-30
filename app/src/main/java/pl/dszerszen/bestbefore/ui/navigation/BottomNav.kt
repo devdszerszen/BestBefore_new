@@ -34,6 +34,7 @@ fun BottomBar(navController: NavController) {
                         currentRoute?.let {
                             popUpTo(it) {
                                 inclusive = true
+                                saveState = true
                             }
                         }
                         launchSingleTop = true
