@@ -9,6 +9,7 @@ import io.kotest.matchers.shouldBe
 import io.mockk.*
 import io.mockk.impl.annotations.RelaxedMockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
@@ -16,11 +17,14 @@ import pl.dszerszen.bestbefore.BaseTest
 import pl.dszerszen.bestbefore.domain.config.ConfigRepository
 import pl.dszerszen.bestbefore.domain.config.model.GlobalConfig
 import pl.dszerszen.bestbefore.domain.product.interactor.AddProductsUseCase
+import pl.dszerszen.bestbefore.domain.product.interactor.GetCategoriesUseCase
+import pl.dszerszen.bestbefore.domain.product.model.Category
 import pl.dszerszen.bestbefore.domain.product.model.Product
 import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.*
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
 import pl.dszerszen.bestbefore.ui.inapp.requestPermission
 import pl.dszerszen.bestbefore.util.Logger
+import pl.dszerszen.bestbefore.util.asSuccess
 import pl.dszerszen.bestbefore.withValue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -38,6 +42,9 @@ internal class AddProductViewModelTest : BaseTest() {
     @RelaxedMockK
     private lateinit var addProductsUseCase: AddProductsUseCase
 
+    @RelaxedMockK
+    private lateinit var getCategoriesUseCase: GetCategoriesUseCase
+
     lateinit var sut: AddProductViewModel
 
     private fun setupSut(
@@ -46,13 +53,17 @@ internal class AddProductViewModelTest : BaseTest() {
     ) {
         coEvery { inAppEventDispatcher.requestPermission(any()) } returns cameraPermissionEnabled
         coEvery { addProductsUseCase.invoke(any()) } just Runs
+        coEvery { getCategoriesUseCase.invoke() } returns flowOf(
+            List(2) { Category("id", "string") }.asSuccess()
+        )
         every { configRepository.getConfig() } returns
                 GlobalConfig().copy(isBarcodeScannerEnabled = scannerEnabledInGlobalConfig)
         sut = AddProductViewModel(
             logger = logger,
             inAppEventHandler = inAppEventDispatcher,
             configRepository = configRepository,
-            addProductsUseCase = addProductsUseCase
+            addProductsUseCase = addProductsUseCase,
+            getCategoriesUseCase = getCategoriesUseCase,
         )
     }
 
@@ -113,6 +124,19 @@ internal class AddProductViewModelTest : BaseTest() {
         sut.viewState.withValue {
             scannedBarcode.shouldBeNull()
             isDuringScanning.shouldBeTrue()
+        }
+    }
+
+    @Test
+    fun `should fetch categories on init`() = runTest {
+        //Arrange
+        setupSut()
+        //Act
+        advanceUntilIdle()
+        //Assert
+        coVerify { getCategoriesUseCase.invoke() }
+        sut.viewState.withValue {
+            categories shouldHaveSize 2
         }
     }
 

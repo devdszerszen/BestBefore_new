@@ -1,5 +1,8 @@
 package pl.dszerszen.bestbefore.ui.start
 
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.types.shouldBeSameInstanceAs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.impl.annotations.RelaxedMockK
@@ -70,7 +73,7 @@ internal class MainViewModelTest : BaseTest() {
     fun `should initially has loader and empty list`() = runTest {
         sut.viewState.withValue {
             assertEquals(true, loaderEnabled)
-            assertEquals(0, products.size)
+            assertEquals(0, allProducts.size)
         }
     }
 
@@ -90,7 +93,7 @@ internal class MainViewModelTest : BaseTest() {
         advanceUntilIdle()
         sut.viewState.withValue {
             assertEquals(false, loaderEnabled)
-            assertEquals(10, products.size)
+            assertEquals(10, allProducts.size)
         }
     }
 
@@ -118,5 +121,42 @@ internal class MainViewModelTest : BaseTest() {
         sut.onUiIntent(MainScreenUiIntent.OnRestoreRequested(sampleProduct))
         advanceUntilIdle()
         coVerify { addProductsUseCase.invoke(listOf(sampleProduct)) }
+    }
+
+    @Test
+    fun `should use all products list when no search value provided`() = runTest {
+        //Arrange
+        coEvery { getAllProductsUseCase.invoke() } returns flowOf((0..3).map {
+            Product(
+                "",
+                date = LocalDate.parse("2020-01-01")
+            )
+        }.asSuccess())
+        //Act
+        advanceUntilIdle()
+        //Assert
+        sut.viewState.withValue {
+            products shouldBeSameInstanceAs allProducts
+            filteredProducts.shouldBeNull()
+        }
+    }
+
+    @Test
+    fun `should use filtered products list when search value provided`() = runTest {
+        //Arrange
+        coEvery { getAllProductsUseCase.invoke() } returns flowOf((0..3).map {
+            Product(
+                "search$it",
+                date = LocalDate.parse("2020-01-01")
+            )
+        }.asSuccess())
+        //Act
+        advanceUntilIdle()
+        sut.onUiIntent(MainScreenUiIntent.OnSearchTextChanged("search0"))
+        //Assert
+        sut.viewState.withValue {
+            products shouldBeSameInstanceAs filteredProducts
+            filteredProducts?.shouldHaveSize(1)
+        }
     }
 }

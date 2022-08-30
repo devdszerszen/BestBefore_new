@@ -11,12 +11,11 @@ import pl.dszerszen.bestbefore.domain.product.interactor.DeleteProductUseCase
 import pl.dszerszen.bestbefore.domain.product.interactor.GetAllProductsUseCase
 import pl.dszerszen.bestbefore.domain.product.model.Product
 import pl.dszerszen.bestbefore.ui.inapp.InAppEventDispatcher
+import pl.dszerszen.bestbefore.ui.inapp.InAppMessage
 import pl.dszerszen.bestbefore.ui.inapp.navigate
+import pl.dszerszen.bestbefore.ui.inapp.showMessage
 import pl.dszerszen.bestbefore.ui.navigation.NavScreen
-import pl.dszerszen.bestbefore.util.Logger
-import pl.dszerszen.bestbefore.util.Response
-import pl.dszerszen.bestbefore.util.StringValue
-import pl.dszerszen.bestbefore.util.asImmutable
+import pl.dszerszen.bestbefore.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,7 +37,7 @@ class MainViewModel @Inject constructor(
                     is Response.Success -> _viewState.update {
                         it.copy(
                             loaderEnabled = false,
-                            products = response.data
+                            allProducts = response.data
                         )
                     }
                     is Response.Error -> _viewState.update {
@@ -55,6 +54,8 @@ class MainViewModel @Inject constructor(
             MainScreenUiIntent.OnAddProductClicked -> onAddProductClick()
             is MainScreenUiIntent.OnProductSwiped -> onDelete(intent.product)
             is MainScreenUiIntent.OnRestoreRequested -> onRestore(intent.product)
+            is MainScreenUiIntent.OnSearchTextChanged -> onSearch(intent.searchText)
+            MainScreenUiIntent.OnSortClicked -> onSortClicked()
         }
     }
 
@@ -66,6 +67,23 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch { addProductsUseCase(listOf(product)) }
     }
 
+    private fun onSearch(searchText: String) {
+        _viewState.update {
+            it.copy(
+                searchText = searchText,
+                filteredProducts = if (searchText.isEmpty()) {
+                    null
+                } else {
+                    it.allProducts.filter { it.name.contains(searchText, true) }
+                }
+            )
+        }
+    }
+
+    private fun onSortClicked() {
+        inAppEventDispatcher.showMessage(InAppMessage.Toast("Not implemented yet"))
+    }
+
     private fun onAddProductClick() {
         inAppEventDispatcher.navigate(NavScreen.AddProduct)
     }
@@ -73,13 +91,21 @@ class MainViewModel @Inject constructor(
 
 data class StartViewState(
     val loaderEnabled: Boolean = true,
-    val products: List<Product> = emptyList(),
-    val errorMessage: StringValue? = null
-)
+    val allProducts: List<Product> = emptyList(),
+    val filteredProducts: List<Product>? = null,
+    val searchText: String = "",
+    val errorMessage: StringValue? = null,
+    val emptyStateMessage: StringValue = "Add your first project".asStringValue()
+) {
+    val products = filteredProducts ?: allProducts
+    val showEmptyState = allProducts.isEmpty()
+}
 
 sealed class MainScreenUiIntent {
     object OnAddProductClicked : MainScreenUiIntent()
     class OnProductSwiped(val product: Product) : MainScreenUiIntent()
     class OnRestoreRequested(val product: Product) : MainScreenUiIntent()
+    class OnSearchTextChanged(val searchText: String) : MainScreenUiIntent()
+    object OnSortClicked : MainScreenUiIntent()
 
 }
