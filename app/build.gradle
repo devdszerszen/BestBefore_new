@@ -93,4 +93,5 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     //Accompanist
     implementation "com.google.accompanist:accompanist-flowlayout:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
 }
