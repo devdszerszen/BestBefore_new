@@ -3,6 +3,7 @@ package pl.dszerszen.bestbefore.ui.main
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -57,6 +58,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ProductsList(
     products: List<Product>,
@@ -115,7 +117,7 @@ private fun ProductsList(
             ) {
                 items(products, key = { it.id }) { product ->
                     DismissableProductListItem(
-                        modifier = Modifier,
+                        modifier = Modifier.animateItemPlacement(),
                         product = product,
                         onDismiss = { removedProduct ->
                             onIntent(OnProductSwiped(removedProduct))
