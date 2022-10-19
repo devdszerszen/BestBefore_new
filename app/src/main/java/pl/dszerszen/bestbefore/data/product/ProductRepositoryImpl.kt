@@ -1,6 +1,7 @@
 package pl.dszerszen.bestbefore.data.product
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import pl.dszerszen.bestbefore.data.product.local.ProductsDatabase
 import pl.dszerszen.bestbefore.domain.product.ProductRepository
@@ -25,7 +26,14 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     override fun getAllProducts(): Flow<Response<List<Product>>> {
-        return db.productsDao.getAllProducts().map { it.map { product -> product.toDomain() }.asSuccess() }
+        return combine(
+            db.productsDao.getAllProducts(),
+            db.categoriesDao.getCategories()
+        ) { products, categories ->
+            products.map { productEntity ->
+                productEntity.toDomain { categoryId -> categories.find { it.id == categoryId }?.toDomain() }
+            }.asSuccess()
+        }
     }
 
     override fun getCategories(): Flow<Response<List<Category>>> {

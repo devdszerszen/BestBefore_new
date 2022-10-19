@@ -2,7 +2,6 @@ package pl.dszerszen.bestbefore.ui.categories
 
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -27,7 +26,7 @@ fun CategoriesRow(
     onClick: (Category, checked: Boolean) -> Unit
 ) {
     FlowRow(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         mainAxisSpacing = dimens.medium,
         mainAxisAlignment = FlowMainAxisAlignment.Center
     ) {

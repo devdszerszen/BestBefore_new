@@ -8,5 +8,6 @@ data class Product(
     val desc: String? = null,
     val quantity: Int = 1,
     val date: LocalDate,
-    val id: String = UUID.randomUUID().toString()
+    val id: String = UUID.randomUUID().toString(),
+    val categories: List<Category> = emptyList()
 )

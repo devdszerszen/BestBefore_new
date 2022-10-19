@@ -106,7 +106,8 @@ class AddProductViewModel @Inject constructor(
                         listOf(
                             Product(
                                 name = name,
-                                date = date
+                                date = date,
+                                categories = categories.filter { it.selected }
                             )
                         )
                     )
