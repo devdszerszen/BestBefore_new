@@ -44,7 +44,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
             FullScreenLoader()
         }
         state.showEmptyState -> {
-            ProductsEmptyState(state.emptyStateMessage)
+            ProductsEmptyState(state.emptyStateMessage) { viewModel.onUiIntent(OnAddProductClicked) }
         }
         else -> {
             ProductsList(
@@ -139,6 +139,7 @@ private fun ProductsList(
 @Composable
 fun ProductsEmptyState(
     message: StringValue,
+    onAddClicked: () -> Unit
 ) {
     Box(Modifier.fillMaxSize()) {
         Column(
@@ -152,6 +153,9 @@ fun ProductsEmptyState(
                 contentDescription = ""
             )
             Text(text = message.get())
+            TextButton(onClick = onAddClicked) {
+                Text(stringResource(R.string.click))
+            }
         }
     }
 }
@@ -174,6 +178,6 @@ fun ProductListPreview() {
 @Composable
 fun ProductsEmptyStatePreview() {
     BestBeforeTheme(previewMode = true) {
-        ProductsEmptyState("Empty state message".asStringValue())
+        ProductsEmptyState("Empty state message".asStringValue()) {}
     }
 }

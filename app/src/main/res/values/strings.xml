@@ -10,6 +10,7 @@
     <string name="error_empty_input">Enter product name</string>
     <string name="my_products">My products</string>
     <string name="shopping_list">Shopping list</string>
+    <string name="click">Click</string>
 
     <!-- Settings -->
     <string name="settings">Settings</string>

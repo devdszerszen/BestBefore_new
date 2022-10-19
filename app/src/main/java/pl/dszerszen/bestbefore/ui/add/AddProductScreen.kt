@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.delay
 import pl.dszerszen.bestbefore.R
 import pl.dszerszen.bestbefore.domain.product.model.Category
 import pl.dszerszen.bestbefore.ui.add.AddProductUiIntent.*
@@ -80,6 +81,7 @@ private fun AddProductScreen(
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
+        delay(200L)
         focusRequester.requestFocus()
     }
     Column(
