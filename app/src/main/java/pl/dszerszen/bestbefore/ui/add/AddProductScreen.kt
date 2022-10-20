@@ -33,7 +33,9 @@ import pl.dszerszen.bestbefore.ui.common.DatePicker
 import pl.dszerszen.bestbefore.ui.common.FullScreenLoader
 import pl.dszerszen.bestbefore.ui.scanner.ScannerPreviewLayer
 import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
+import pl.dszerszen.bestbefore.ui.theme.Typography
 import pl.dszerszen.bestbefore.ui.theme.dimens
+import pl.dszerszen.bestbefore.ui.theme.standardNormal
 
 @Composable
 fun AddProductScreen(viewModel: AddProductViewModel = hiltViewModel()) {
@@ -124,6 +126,7 @@ private fun AddProductScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = dimens.medium),
+            textStyle = Typography.standardNormal,
             categories = state.categories,
             onClick = { category, checked ->
                 focusManager.clearFocus()

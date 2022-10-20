@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import pl.dszerszen.bestbefore.domain.product.model.Product
+import pl.dszerszen.bestbefore.ui.categories.CategoriesRow
 import pl.dszerszen.bestbefore.ui.theme.BestBeforeTheme
 import pl.dszerszen.bestbefore.ui.theme.dimens
 import pl.dszerszen.bestbefore.util.formatFullDate
@@ -80,6 +81,11 @@ fun DismissableProductListItem(
             ) {
                 Column {
                     Text(product.name)
+                    CategoriesRow(
+                        categories = product.categories.map { it.copy(selected = true) },
+                        textPadding = PaddingValues(horizontal = dimens.medium, vertical = dimens.small),
+                        modifier = Modifier.wrapContentSize()
+                    ) { _, _ -> }
                     Text(product.date.formatFullDate())
                 }
                 Spacer(Modifier.weight(1f))
