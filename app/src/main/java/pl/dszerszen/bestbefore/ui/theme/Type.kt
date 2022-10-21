@@ -32,6 +32,16 @@ val Typography.standardNormal: TextStyle
         return TextStyle(
             fontFamily = FontFamily.Default,
             fontWeight = FontWeight.Normal,
-            fontSize = 15.sp
+            fontSize = 16.sp
+        )
+    }
+
+val Typography.bigNormal: TextStyle
+    @Composable
+    get() {
+        return TextStyle(
+            fontFamily = FontFamily.Default,
+            fontWeight = FontWeight.Normal,
+            fontSize = 20.sp
         )
     }
